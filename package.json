@@ -18,7 +18,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:safety": "vitest run content/safety",
-    "check": "npm run lint && npm test && npm run build"
+    "check": "npm run lint && npm test && npm run build",
+    "size": "node scripts/size-report.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

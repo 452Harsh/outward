@@ -327,3 +327,144 @@ textarea {
 .discovery {
   font-size: 20px;
 }
+
+.stats div:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
+.provenance {
+  margin: -8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.kv h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.kv dl {
+  display: grid;
+  grid-template-columns: minmax(110px, 40%) 1fr;
+  gap: 6px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+.kv dt {
+  color: var(--muted);
+}
+.kv dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.kv .btn {
+  width: 100%;
+}
+.sample {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.download h2 {
+  font-size: 20px;
+}
+.download .size {
+  margin: 8px 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.download .size span {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.download .btn {
+  width: 100%;
+  margin-top: 12px;
+}
+.download .note {
+  margin-top: 12px;
+}
+progress {
+  width: 100%;
+  height: 14px;
+  accent-color: var(--accent);
+}
+
+.tip p {
+  margin: 8px 0 12px;
+}
+.tip .btn {
+  width: 100%;
+}
+
+.options {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.options li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 2px solid transparent;
+}
+.options li.on {
+  border-color: var(--green);
+}
+.options li div {
+  display: grid;
+  gap: 2px;
+}
+.options li span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.options .btn {
+  min-height: 48px;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+.badge {
+  color: var(--green) !important;
+  font-weight: 600;
+}
+
+.links.stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+.links.stacked .link {
+  text-align: left;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.toggles {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.toggles label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  background: var(--surface);
+  border-radius: 14px;
+}
+.toggles input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}

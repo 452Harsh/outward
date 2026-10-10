@@ -6,7 +6,20 @@ Outward is an installable web app (PWA) that turns a walk into an adventure. You
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
 
-> **Status:** Phase 1 of 8. The offline PWA with the full 5-chapter story, safety system and Render deployment works. The on-device model, voice, GPS and the training pipeline come next (see [Roadmap](#roadmap)).
+> **Status:** Phase 2 of 8. The offline PWA, the 5-chapter story, and an on-device Gemma 3 270M storyteller work in airplane mode. Voice, the walk path, and the fine-tuning pipeline come next (see [Roadmap](#roadmap)).
+
+## On-device AI
+
+| | |
+|---|---|
+| Runtime | [wllama](https://github.com/ngxson/wllama) (llama.cpp → WebAssembly). Uses WebGPU when available, multi-threaded CPU otherwise |
+| Default model | Gemma 3 270M, QAT Q4_0 GGUF, **241.4 MB** |
+| Optional upgrade | Gemma 3 1B, QAT Q4_0 GGUF, **720.4 MB**, always from Hugging Face, needs WebGPU (Settings → Storyteller) |
+| Model source | Hugging Face during development. Demo build (`VITE_MODEL_SOURCE=render`): Render first, Hugging Face as fallback |
+| Caching | OPFS, keyed by a versioned URL. A phone re-downloads only when `content/models.json` changes. One model per phone |
+| Fallback | If there's no model, generation fails, takes over 30 s, or fails the safety/quality checks, a pre-written continuation is used |
+
+Run `npm run size` after a build for the install size by part.
 
 ## Repo layout
 
@@ -28,7 +41,7 @@ npm install
 npm run dev            # Vite dev server at http://localhost:5173 (no offline caching in dev)
 ```
 
-To test the real offline PWA:
+To test the real offline PWA (production build, Hugging Face as the model source):
 
 ```bash
 npm run build
@@ -38,6 +51,18 @@ npm start              # http://localhost:10000
 Open it once, finish Setup, then switch to airplane mode (or turn on DevTools → Network → Offline) and reload. It keeps working.
 
 To test on a phone on the same Wi-Fi, use an HTTPS tunnel. Service workers and geolocation need HTTPS everywhere except `localhost`.
+
+For the demo build that serves the 270M model from Render:
+
+```bash
+VITE_MODEL_SOURCE=render npm run build
+```
+
+### On the phone
+
+**Settings → Diagnostics** shows WebGPU support, the GPU adapter, `deviceMemory`, and whether multi-threading is available. It also runs a GPU-vs-CPU speed benchmark.
+
+**Settings → Screen-off field test** logs what keeps working with the phone locked in a pocket: GPS, timers, background audio, speech and generation. Use **Copy full log** to share the results.
 
 ### Checks
 
@@ -51,11 +76,11 @@ npm run check          # lint + test + build (same as CI)
 ## Deploy to Render
 
 1. Push this repo to GitHub.
-2. In Render, go to **New → Blueprint** and select the repo. `render.yaml` creates a single **Starter web service** with a **5 GB persistent disk** mounted at `/var/data`.
-3. Read [docs/render-costs.md](docs/render-costs.md) first. This creates paid resources (about $8.25/month fixed, plus bandwidth).
+2. In Render, go to **New → Blueprint** and select the repo. `render.yaml` creates a single **Starter web service** in Singapore with a **1 GB persistent disk** mounted at `/var/data`. On boot, the server downloads the 270M model from Hugging Face onto the disk; `/api/health` shows when it's ready.
+3. Read [docs/render-costs.md](docs/render-costs.md) first. This creates paid resources (about $7.25/month fixed, plus bandwidth). Once `MODEL_BANDWIDTH_BUDGET_GB` (60) is served in a month, model downloads redirect to Hugging Face.
 4. Once it's live, open the `onrender.com` URL on your phone and choose **Add to Home Screen**.
 
-Model weights are never stored in Git. They are uploaded to the Render disk (phase 2) and mirrored on Hugging Face as a fallback.
+Model weights are never stored in Git. The server pulls them from Hugging Face onto the Render disk.
 
 ## Safety
 
@@ -68,12 +93,12 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 
 ## Reproduce the training pipeline
 
-*Coming in phases 5–6.* Scripts will live in `training/`: seed dataset → eval set and rubric → Tinker LoRA on Qwen3.5-4B (teacher) → distillation → Gemma 3 1B student → WebLLM export.
+*Coming in phases 5–6.* Scripts will live in `training/`: seed dataset → eval set and rubric → Tinker LoRA on Qwen3.5-4B (teacher) → distillation → Gemma 3 270M (and 1B) student → GGUF export.
 
 ## Roadmap
 
 1. ✅ Offline PWA on Render with static story and missions
-2. On-device Gemma 3 1B (WebLLM/WebGPU) writing continuations
+2. ✅ On-device Gemma 3 270M (wllama, WebGPU/CPU) writing continuations, plus a field-test lab
 3. Voice in (Whisper, on-device) and out (ElevenLabs narration + speechSynthesis)
 4. GPS walk path, chapter unlocks, screen-time tracking, streaks
 5. Tinker teacher fine-tune + eval

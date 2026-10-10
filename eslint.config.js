@@ -16,7 +16,7 @@ export default [
     rules: { 'react/jsx-uses-vars': 'error' },
   },
   {
-    files: ['server/**/*.js', 'content/**/*.js', '*.config.js', 'app/*.config.js'],
+    files: ['server/**/*.js', 'content/**/*.js', 'scripts/**/*.mjs', '*.config.js', 'app/*.config.js'],
     languageOptions: { globals: globals.node },
   },
 ];

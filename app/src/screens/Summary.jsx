@@ -17,6 +17,10 @@ export default function Summary({ story, chapter, session, progress, onHome }) {
           <span>{minutes === 1 ? 'minute' : 'minutes'} on this chapter</span>
         </div>
         <div>
+          <strong>{session.meters >= 1000 ? (session.meters / 1000).toFixed(1) : session.meters ?? 0}</strong>
+          <span>{session.meters >= 1000 ? 'km' : 'metres'} walked</span>
+        </div>
+        <div>
           <strong>
             {progress.completed.length}/{story.chapters.length}
           </strong>

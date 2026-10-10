@@ -6,6 +6,8 @@
   "exports": {
     "./safety": "./safety/filter.js",
     "./safety/*": "./safety/*",
+    "./models": "./models.js",
+    "./models.json": "./models.json",
     "./stories/*": "./stories/*"
   }
 }

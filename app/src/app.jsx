@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'preact/hooks';
-import { getMeta, getProgress, setMeta } from './db/index.js';
+import { getActiveChapter, getMeta, getProgress, setMeta } from './db/index.js';
 import { getStory } from './engine/story.js';
+import { resumeIfActive } from './lab/fieldtest.js';
 import SafetyNote from './screens/SafetyNote.jsx';
 import Setup from './screens/Setup.jsx';
 import Home from './screens/Home.jsx';
 import Chapter from './screens/Chapter.jsx';
 import Summary from './screens/Summary.jsx';
+import Settings from './screens/Settings.jsx';
+import Diagnostics from './screens/Diagnostics.jsx';
+import FieldTest from './screens/FieldTest.jsx';
 
 const story = getStory();
+const chapterById = (id) => story.chapters.find((c) => c.id === id);
 
 export function App() {
   const [route, setRoute] = useState({ name: 'loading' });
@@ -16,15 +21,22 @@ export function App() {
 
   useEffect(() => {
     (async () => {
-      const [safetyAccepted, setupDone, savedPrefs, p] = await Promise.all([
+      const [safetyAccepted, setupDone, savedPrefs, p, active] = await Promise.all([
         getMeta('safetyAccepted', false),
         getMeta('setupDone', false),
         getMeta('prefs', null),
         getProgress(story.id),
+        getActiveChapter(),
       ]);
       if (savedPrefs) setPrefs(savedPrefs);
       setProgress(p);
-      setRoute({ name: !safetyAccepted ? 'safety' : !setupDone ? 'setup' : 'home' });
+      resumeIfActive();
+      if (!safetyAccepted) return setRoute({ name: 'safety' });
+      if (!setupDone) return setRoute({ name: 'setup' });
+      // A chapter was in progress (e.g. Chrome killed the page in a pocket): pick it up.
+      const ch = active && chapterById(active.chapterId);
+      if (ch && !p.completed.includes(ch.id)) return setRoute({ name: 'chapter', chapter: ch, resume: active });
+      setRoute({ name: 'home' });
     })();
   }, []);
 
@@ -33,6 +45,10 @@ export function App() {
     const merged = { ...prefs, ...next };
     setPrefs(merged);
     setMeta('prefs', merged);
+  };
+  const startChapter = async (chapter) => {
+    const active = await getActiveChapter();
+    go('chapter', { chapter, resume: active?.chapterId === chapter.id ? active : null });
   };
 
   switch (route.name) {
@@ -62,7 +78,7 @@ export function App() {
           progress={progress}
           prefs={prefs}
           onPrefs={updatePrefs}
-          onStart={(chapter) => go('chapter', { chapter })}
+          onStart={startChapter}
           onProgress={setProgress}
           onNavigate={go}
         />
@@ -70,8 +86,10 @@ export function App() {
     case 'chapter':
       return (
         <Chapter
+          key={route.chapter.id}
           story={story}
           chapter={route.chapter}
+          resume={route.resume}
           prefs={prefs}
           progress={progress}
           onExit={() => go('home')}
@@ -83,14 +101,14 @@ export function App() {
       );
     case 'summary':
       return (
-        <Summary
-          story={story}
-          chapter={route.chapter}
-          session={route.session}
-          progress={progress}
-          onHome={() => go('home')}
-        />
+        <Summary story={story} chapter={route.chapter} session={route.session} progress={progress} onHome={() => go('home')} />
       );
+    case 'settings':
+      return <Settings prefs={prefs} onPrefs={updatePrefs} onNavigate={go} onBack={() => go('home')} />;
+    case 'diagnostics':
+      return <Diagnostics onBack={() => go('settings')} />;
+    case 'fieldtest':
+      return <FieldTest onBack={() => go('settings')} />;
     default:
       return <main class="screen center" aria-busy="true" />;
   }

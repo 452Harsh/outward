@@ -1,26 +1,61 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { addSession, saveProgress } from '../db/index.js';
+import { getInstalled, loadModel } from '../ai/llm.js';
+import { addSession, clearActiveChapter, saveActiveChapter, saveProgress } from '../db/index.js';
 import { cleanDiscovery, completeChapter, nextStep } from '../engine/story.js';
 import { continueStory } from '../engine/storyteller.js';
 import { buzz, haptics, speak, stopSpeaking } from '../lib/device.js';
+import { emptyWalk, trackWalk } from '../sensors/geo.js';
 
-export default function Chapter({ story, chapter, prefs, progress, onExit, onComplete }) {
-  const [step, setStep] = useState('intro');
-  const [discovery, setDiscovery] = useState('');
-  const [continuation, setContinuation] = useState(null);
+/** Load the storyteller into memory while the screen is still on. */
+function preloadModel() {
+  getInstalled()
+    .then((rec) => rec && loadModel())
+    .catch(() => {});
+}
+
+export default function Chapter({ story, chapter, prefs, progress, resume, onExit, onComplete }) {
+  const [state, setState] = useState(
+    () =>
+      resume ?? {
+        storyId: story.id,
+        chapterId: chapter.id,
+        step: 'intro',
+        discovery: '',
+        continuation: null,
+        startedAt: Date.now(),
+        timeBudget: prefs.timeBudget,
+        walk: emptyWalk(),
+      },
+  );
   const [busy, setBusy] = useState(false);
-  const startedAt = useRef(Date.now());
+  const stateRef = useRef(state);
+
+  // Every change is written to IndexedDB at once: if Chrome kills the page in
+  // a pocket, reopening the app resumes at the same step.
+  const update = (patch) => {
+    const next = { ...stateRef.current, ...patch };
+    stateRef.current = next;
+    setState(next);
+    saveActiveChapter(next);
+    return next;
+  };
 
   const narrate = (text) => prefs.narration && speak(text);
+  const { step, discovery, continuation, walk } = state;
 
-  // Narrate the intro once the screen opens (it was reached by a tap, so audio is allowed).
   useEffect(() => {
-    narrate(chapter.intro);
-    return stopSpeaking;
+    saveActiveChapter(stateRef.current);
+    if (stateRef.current.step === 'intro') narrate(chapter.intro);
+    preloadModel();
+    const stop = trackWalk(stateRef.current.walk, (w) => update({ walk: w }));
+    return () => {
+      stop();
+      stopSpeaking();
+    };
   }, []);
 
-  const advance = (to = nextStep(step)) => {
-    setStep(to);
+  const advance = (to = nextStep(stateRef.current.step)) => {
+    update({ step: to });
     if (to === 'mission') {
       buzz(haptics.missionStart);
       narrate(`${chapter.mission.prompt} ${chapter.mission.safetyNote}`);
@@ -32,32 +67,39 @@ export default function Chapter({ story, chapter, prefs, progress, onExit, onCom
     }
   };
 
+  // The only model call in a chapter. It runs right after the user describes
+  // their find, with the screen on, so nothing needs generating in a pocket.
   const tellStory = async () => {
     setBusy(true);
-    const result = await continueStory({ story, chapter, discovery });
-    setContinuation(result);
+    const result = await continueStory({ chapter, discovery });
     setBusy(false);
-    advance('continuation');
+    update({ continuation: result, step: 'continuation' });
     narrate(result.text);
   };
 
   const finish = async () => {
     stopSpeaking();
     buzz(haptics.chapterEnd);
-    const clean = cleanDiscovery(discovery);
+    const s = stateRef.current;
+    const clean = cleanDiscovery(s.discovery);
     const session = {
       storyId: story.id,
       chapterId: chapter.id,
-      startedAt: startedAt.current,
+      startedAt: s.startedAt,
       endedAt: Date.now(),
-      timeBudget: prefs.timeBudget,
+      timeBudget: s.timeBudget,
       discovery: clean,
-      continuationSource: continuation?.source ?? 'template',
+      continuationSource: s.continuation?.source ?? 'template',
+      continuationReason: s.continuation?.reason ?? null,
+      generation: s.continuation?.stats ?? null,
+      meters: Math.round(s.walk?.meters ?? 0),
     };
     const next = completeChapter(progress, chapter.id, clean);
-    await Promise.all([saveProgress(next), addSession(session)]);
+    await Promise.all([saveProgress(next), addSession(session), clearActiveChapter()]);
     onComplete(next, session);
   };
+
+  const meters = Math.round(walk?.meters ?? 0);
 
   return (
     <main class="screen" data-step={step}>
@@ -90,6 +132,7 @@ export default function Chapter({ story, chapter, prefs, progress, onExit, onCom
             <h2>{chapter.mission.prompt}</h2>
             <p class="note safe">{chapter.mission.safetyNote}</p>
             <p class="hint">Put your phone in your pocket. Take it out when you've found it.</p>
+            {meters > 0 && <p class="hint">Walked so far: {meters} m</p>}
           </section>
           <footer class="actions">
             <button class="btn primary big" onClick={() => advance()}>
@@ -111,7 +154,7 @@ export default function Chapter({ story, chapter, prefs, progress, onExit, onCom
               maxLength={280}
               placeholder={`e.g. ${chapter.mission.examples[0]}`}
               value={discovery}
-              onInput={(e) => setDiscovery(e.currentTarget.value)}
+              onInput={(e) => update({ discovery: e.currentTarget.value })}
               autoFocus
             />
           </section>
@@ -123,11 +166,17 @@ export default function Chapter({ story, chapter, prefs, progress, onExit, onCom
         </>
       )}
 
-      {step === 'continuation' && (
+      {step === 'continuation' && continuation && (
         <>
           <article class="story">
             <p>{continuation.text}</p>
           </article>
+          <p class="provenance" data-reason={continuation.reason ?? ''}>
+            {continuation.source === 'model'
+              ? `Written on this phone in ${(continuation.stats.ms / 1000).toFixed(1)} s · ${continuation.stats.gpu ? 'GPU' : 'CPU'}`
+              : 'Pre-written'}
+            {import.meta.env.DEV && continuation.reason ? ` (${continuation.reason})` : ''}
+          </p>
           <footer class="actions">
             <button class="btn primary big" onClick={() => advance()}>
               Continue

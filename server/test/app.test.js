@@ -1,8 +1,10 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { getModel, hfUrl, renderPath } from '@outward/content/models';
 import { buildServer } from '../src/app.js';
+import { modelStatus, syncModels } from '../src/models.js';
 
 const root = mkdtempSync(path.join(tmpdir(), 'outward-'));
 const appDist = path.join(root, 'dist');
@@ -56,5 +58,52 @@ describe('server', () => {
   it('does not fall back to the SPA for missing model files', async () => {
     const res = await app.inject('/models/missing.bin');
     expect(res.statusCode).toBe(404);
+  });
+});
+
+describe('cross-origin isolation', () => {
+  it('sets COOP/COEP on every response', async () => {
+    const res = await app.inject('/api/health');
+    expect(res.headers['cross-origin-opener-policy']).toBe('same-origin');
+    expect(res.headers['cross-origin-embedder-policy']).toBe('require-corp');
+  });
+});
+
+describe('model bandwidth guardrail', () => {
+  it('counts bytes served from /models', async () => {
+    const before = app.meter.snapshot().gb;
+    app.meter.add(2e9);
+    expect(app.meter.snapshot().gb).toBeCloseTo(before + 2, 1);
+  });
+
+  it('redirects known model files to Hugging Face once over budget', async () => {
+    const over = buildServer({ appDist, modelsDir: path.join(root, 'models2'), budgetGB: 0.000001, logger: false });
+    await over.ready();
+    over.meter.add(10_000);
+    const m = getModel('gemma3-270m');
+    const res = await over.inject(`/models/${renderPath(m)}`);
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe(hfUrl(m));
+    const unknown = await over.inject('/models/other/file.gguf');
+    expect(unknown.statusCode).toBe(404);
+    await over.close();
+  });
+});
+
+describe('model sync', () => {
+  it('downloads Render-served models, verifies size, prunes old versions', async () => {
+    const dir = path.join(root, 'sync');
+    const m = getModel('gemma3-270m');
+    mkdirSync(path.join(dir, m.id, 'old-version'), { recursive: true });
+    const fetchImpl = async () => new Response(new Uint8Array(m.bytes));
+    await syncModels(dir, { log: {}, fetchImpl });
+    expect(modelStatus(dir)).toEqual([{ id: m.id, version: m.version, ready: true }]);
+    expect(existsSync(path.join(dir, m.id, 'old-version'))).toBe(false);
+  });
+
+  it('rejects a truncated download', async () => {
+    const dir = path.join(root, 'sync-bad');
+    const fetchImpl = async () => new Response(new Uint8Array(10));
+    await expect(syncModels(dir, { log: {}, fetchImpl })).rejects.toThrow('size mismatch');
   });
 });

@@ -14,8 +14,12 @@ services:
         value: "24"
       - key: MODELS_DIR
         value: /var/data/models
-    # Persistent disk for model weights (uploaded in phase 2). Disks can grow later but never shrink.
+      # After this much model traffic in a month, /models redirects to Hugging Face.
+      - key: MODEL_BANDWIDTH_BUDGET_GB
+        value: "60"
+    # Model weights served from Render (270M only; the optional 1B comes from Hugging Face).
+    # The server fills this disk from Hugging Face on boot. Disks can grow later but never shrink.
     disk:
       name: outward-data
       mountPath: /var/data
-      sizeGB: 5
+      sizeGB: 1

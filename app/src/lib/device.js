@@ -24,15 +24,50 @@ export function stopSpeaking() {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
 
-export async function detectWebGPU() {
-  if (!navigator.gpu) return { supported: false, f16: false, reason: 'WebGPU is not available in this browser' };
-  try {
-    const adapter = await navigator.gpu.requestAdapter();
-    if (!adapter) return { supported: false, f16: false, reason: 'No compatible GPU adapter' };
-    return { supported: true, f16: adapter.features.has('shader-f16') };
-  } catch (err) {
-    return { supported: false, f16: false, reason: String(err?.message ?? err) };
-  }
+let gpuPromise = null;
+
+/** WebGPU support plus adapter details (cached; requesting an adapter is not free). */
+export function detectWebGPU() {
+  gpuPromise ??= (async () => {
+    if (!navigator.gpu) return { supported: false, f16: false, reason: 'WebGPU is not available in this browser' };
+    try {
+      const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+      if (!adapter) return { supported: false, f16: false, reason: 'No compatible GPU adapter' };
+      const info = adapter.info ?? {};
+      const l = adapter.limits;
+      return {
+        supported: true,
+        f16: adapter.features.has('shader-f16'),
+        fallbackAdapter: !!(info.isFallbackAdapter ?? adapter.isFallbackAdapter),
+        vendor: info.vendor || '',
+        architecture: info.architecture || '',
+        device: info.device || '',
+        description: info.description || '',
+        features: [...adapter.features].sort(),
+        limits: {
+          maxBufferSize: l.maxBufferSize,
+          maxStorageBufferBindingSize: l.maxStorageBufferBindingSize,
+          maxComputeWorkgroupStorageSize: l.maxComputeWorkgroupStorageSize,
+          maxComputeInvocationsPerWorkgroup: l.maxComputeInvocationsPerWorkgroup,
+        },
+      };
+    } catch (err) {
+      return { supported: false, f16: false, reason: String(err?.message ?? err) };
+    }
+  })();
+  return gpuPromise;
+}
+
+export function getDeviceInfo() {
+  return {
+    // Chrome caps deviceMemory at 8 (GB) and rounds down for privacy.
+    deviceMemoryGB: navigator.deviceMemory ?? null,
+    cores: navigator.hardwareConcurrency ?? null,
+    crossOriginIsolated: !!window.crossOriginIsolated,
+    standalone: window.matchMedia('(display-mode: standalone)').matches,
+    android: /Android/i.test(navigator.userAgent),
+    userAgent: navigator.userAgent,
+  };
 }
 
 const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(() => r(null), ms))]);
@@ -57,8 +92,12 @@ export function getConnection() {
   return { online: navigator.onLine, type: c?.type, effectiveType: c?.effectiveType, saveData: !!c?.saveData };
 }
 
+/** Decimal units (1 MB = 1,000,000 bytes), matching Hugging Face and download sizes. */
 export function formatBytes(n) {
   if (!n) return '0 MB';
-  const gb = n / 1024 ** 3;
-  return gb >= 1 ? `${gb.toFixed(1)} GB` : `${Math.max(1, Math.round(n / 1024 ** 2))} MB`;
+  return n >= 1e9 ? `${(n / 1e9).toFixed(2)} GB` : `${(n / 1e6).toFixed(1)} MB`;
+}
+
+export function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
 }

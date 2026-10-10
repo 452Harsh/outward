@@ -71,14 +71,11 @@ export default function Home({ story, progress, prefs, onPrefs, onStart, onProgr
       )}
 
       <nav class="links">
-        <button class="link" onClick={() => onPrefs({ narration: !prefs.narration })}>
-          Narration: {prefs.narration ? 'on' : 'off'}
+        <button class="link" onClick={() => onNavigate('settings')}>
+          Settings
         </button>
         <button class="link" onClick={() => onNavigate('safety', { firstRun: false })}>
           Safety
-        </button>
-        <button class="link" onClick={() => onNavigate('setup')}>
-          Offline status
         </button>
       </nav>
     </main>

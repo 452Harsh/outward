@@ -7,7 +7,7 @@ Prices checked 2026-10-10 against render.com/docs. Budget: **$50 Render credit**
 | Item | Price | Monthly |
 |---|---|---|
 | Web service, Starter (no sleeping; serves PWA, models, story factory) | $7/month | $7.00 |
-| Persistent disk, 5 GB as in `render.yaml` (could be 1 GB, see below) | $0.25/GB/month | $1.25 |
+| Persistent disk, 1 GB (270M model + audio) | $0.25/GB/month | $0.25 |
 | Hobby workspace fee | $0 | $0.00 |
 | Bandwidth: first 5 GB | included | $0.00 |
 | Bandwidth beyond 5 GB | $0.15/GB | see below |
@@ -35,7 +35,7 @@ The earlier plan served the 602 MB Gemma 3 1B from Render to every install: 100 
 
 ## Optional cuts that don't hurt the demo
 
-1. **Disk 5 GB → 1 GB (saves $1/month).** The 270M model + Whisper + audio is about 0.3 GB, so 1 GB holds the current and previous version. Disks can grow later but never shrink, so this must be decided *before* applying the Blueprint.
+1. ✅ **Disk 5 GB → 1 GB (saves $1/month)** is applied in `render.yaml`. The server keeps only the current model version on it.
 2. **Serve Whisper from Hugging Face even in the demo build (saves ~$0.6 per 100 installs).** Only the Gemma student comes from Render, which is the part that matters for the Render story.
 3. **Bandwidth guardrail (phase 2):** after `MODEL_BANDWIDTH_BUDGET_GB` (default 60) is served in a month, `/models/*` redirects to the Hugging Face mirror. This caps the bandwidth cost at about $8.25.
 
