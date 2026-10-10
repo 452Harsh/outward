@@ -1,8 +1,14 @@
-import { resetStory } from '../db/index.js';
+import { useEffect, useState } from 'preact/hooks';
+import { getSessions, resetStory } from '../db/index.js';
+import { streakDays, totals } from '../engine/activity.js';
 import { TIME_BUDGETS, currentChapter, newProgress } from '../engine/story.js';
 
 export default function Home({ story, progress, prefs, onPrefs, onStart, onProgress, onNavigate }) {
   const chapter = currentChapter(story, progress);
+  const [stats, setStats] = useState(null);
+  useEffect(() => {
+    getSessions().then((all) => setStats({ streak: streakDays(all), ...totals(all) }));
+  }, [progress]);
 
   const restart = async () => {
     if (!confirm('Start the story again from chapter 1?')) return;
@@ -27,6 +33,23 @@ export default function Home({ story, progress, prefs, onPrefs, onStart, onProgr
           />
         ))}
       </ol>
+
+      {stats?.chapters > 0 && (
+        <section class="strip" aria-label="Your time outside">
+          <div>
+            <strong>{stats.streak}</strong>
+            <span>day streak</span>
+          </div>
+          <div>
+            <strong>{stats.meters >= 1000 ? `${(stats.meters / 1000).toFixed(1)} km` : `${stats.meters} m`}</strong>
+            <span>walked</span>
+          </div>
+          <div>
+            <strong>{stats.outsideMin} min</strong>
+            <span>outside{stats.screenFreePct != null ? `, ${stats.screenFreePct}% phone-free` : ''}</span>
+          </div>
+        </section>
+      )}
 
       {chapter ? (
         <>

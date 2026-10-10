@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { getInstalled, loadModel } from '../ai/llm.js';
 import { addSession, clearActiveChapter, saveActiveChapter, saveProgress } from '../db/index.js';
+import { missionGate, newScreenClock, onVisibility, screenMs } from '../engine/activity.js';
 import { cleanDiscovery, completeChapter, nextStep } from '../engine/story.js';
 import { continueStory } from '../engine/storyteller.js';
 import { clipId, missionText } from '@outward/content/audio/clips.js';
@@ -28,9 +29,13 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
         startedAt: Date.now(),
         timeBudget: prefs.timeBudget,
         walk: emptyWalk(),
+        screen: newScreenClock(Date.now()),
+        missionStartedAt: null,
+        practice: !!prefs.practice,
       },
   );
   const [busy, setBusy] = useState(false);
+  const [now, setNow] = useState(Date.now());
   const stateRef = useRef(state);
 
   // Every change is written to IndexedDB at once: if Chrome kills the page in
@@ -52,14 +57,25 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     if (stateRef.current.step === 'intro') narrate('intro', chapter.intro);
     preloadModel();
     const stop = trackWalk(stateRef.current.walk, (w) => update({ walk: w }));
+    // Screen time: saved on every change, so it survives the page being killed.
+    const onVis = () => {
+      const t = Date.now();
+      update({ screen: onVisibility(stateRef.current.screen ?? newScreenClock(t), document.visibilityState === 'visible', t) });
+      setNow(t);
+    };
+    document.addEventListener('visibilitychange', onVis);
+    if (stateRef.current.screen) onVis();
+    const tick = setInterval(() => setNow(Date.now()), 15000);
     return () => {
       stop();
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', onVis);
       stopNarration();
     };
   }, []);
 
   const advance = (to = nextStep(stateRef.current.step)) => {
-    update({ step: to });
+    update(to === 'mission' && !stateRef.current.missionStartedAt ? { step: to, missionStartedAt: Date.now() } : { step: to });
     if (to === 'mission') {
       buzz(haptics.missionStart);
       narrate('mission', missionText(chapter));
@@ -85,12 +101,16 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     stopNarration();
     buzz(haptics.chapterEnd);
     const s = stateRef.current;
+    const endedAt = Date.now();
     const clean = cleanDiscovery(s.discovery);
     const session = {
       storyId: story.id,
       chapterId: chapter.id,
       startedAt: s.startedAt,
-      endedAt: Date.now(),
+      endedAt,
+      screenMs: s.screen ? screenMs(s.screen, endedAt) : null,
+      path: s.walk?.path ?? [],
+      practice: !!s.practice,
       timeBudget: s.timeBudget,
       discovery: clean,
       continuationSource: s.continuation?.source ?? 'template',
@@ -103,7 +123,14 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     onComplete(next, session);
   };
 
-  const meters = Math.round(walk?.meters ?? 0);
+  const gate = missionGate({
+    chapter,
+    timeBudget: state.timeBudget,
+    walk,
+    missionStartedAt: state.missionStartedAt,
+    now,
+    practice: state.practice,
+  });
 
   return (
     <main class="screen" data-step={step}>
@@ -136,11 +163,24 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
             <h2>{chapter.mission.prompt}</h2>
             <p class="note safe">{chapter.mission.safetyNote}</p>
             <p class="hint">Put your phone in your pocket. Take it out when you've found it.</p>
-            {meters > 0 && <p class="hint">Walked so far: {meters} m</p>}
+            <div class="walk-progress" aria-live="polite">
+              <progress max={gate.need} value={Math.min(gate.meters, gate.need)} />
+              <p class="hint">
+                {gate.ready
+                  ? gate.by === 'distance'
+                    ? `${gate.meters} m walked. Whenever you find it, tell the atlas.`
+                    : gate.by === 'practice'
+                      ? 'Practice mode: no walk needed.'
+                      : 'No GPS signal, so time outside counts instead.'
+                  : gate.gps
+                    ? `${gate.meters} of ${gate.need} m. Walk ${gate.toGo} m more, then look around.`
+                    : `Waiting for GPS… or keep walking about ${gate.waitMin} more min.`}
+              </p>
+            </div>
           </section>
           <footer class="actions">
-            <button class="btn primary big" onClick={() => advance()}>
-              I found it
+            <button class="btn primary big" onClick={() => advance()} disabled={!gate.ready}>
+              {gate.ready ? 'I found it' : `Keep walking (${gate.toGo} m)`}
             </button>
           </footer>
         </>

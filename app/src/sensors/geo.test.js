@@ -46,3 +46,23 @@ describe('addFix', () => {
     expect(w.resumedMeters).toBeCloseTo(556, -1);
   });
 });
+
+describe('walk path', () => {
+  it('records accepted points and marks resume segments', () => {
+    let w = addFix(emptyWalk(), at(0, 0));
+    w = addFix(w, at(0.0005, 60_000));
+    w = addFix(w, at(0.00051, 61_000)); // 1 m of jitter: not recorded
+    w = addFix(w, at(0.005, 10 * 60_000), { resumed: true });
+    expect(w.path).toHaveLength(3);
+    expect(w.path.map((p) => p[2])).toEqual([0, 0, 1]);
+  });
+
+  it('thins the path but keeps both ends when it gets long', async () => {
+    const { MAX_PATH_POINTS } = await import('./geo.js');
+    let w = addFix(emptyWalk(), at(0, 0));
+    for (let i = 1; i <= MAX_PATH_POINTS + 5; i++) w = addFix(w, at(i * 0.0001, i * 10_000));
+    expect(w.path.length).toBeLessThanOrEqual(MAX_PATH_POINTS);
+    expect(w.path[0][0]).toBeCloseTo(12.97, 4);
+    expect(w.path.at(-1)[0]).toBeCloseTo(12.97 + (MAX_PATH_POINTS + 5) * 0.0001, 4);
+  });
+});

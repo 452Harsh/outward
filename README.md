@@ -6,7 +6,7 @@ Outward is an installable web app (PWA) that turns a walk into an adventure. You
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
 
-> **Status:** Phase 3 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode. The walk path and the fine-tuning pipeline come next (see [Roadmap](#roadmap)).
+> **Status:** Phase 4 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode, along with walking-gated missions, a drawn walk path and screen-time stats. The fine-tuning pipeline comes next (see [Roadmap](#roadmap)).
 
 ## On-device AI
 
@@ -22,6 +22,18 @@ After one install, it works fully offline: no signal needed, and nothing about y
 | Voice out | Fixed narration: ElevenLabs clips (64 kbps mono) through one audio player with lock-screen controls. Model-written text: the device voice. Clips not generated yet fall back to the device voice |
 
 Run `npm run size` after a build for the install size by part.
+
+## Outside time
+
+| | |
+|---|---|
+| Walking gate | "I found it" opens after the chapter's distance for the chosen time: 250 m (10 min), 700 m (30 min), 1,400 m (60 min) |
+| GPS | Tracked while the screen is on. After a screen-off gap, one fresh fix adds the straight-line distance (drawn dashed). Fixes with accuracy over 50 m or speed over 4 m/s are ignored |
+| No GPS | If no usable fix arrives (e.g. a laptop), time outside counts instead: 5 / 12 / 25 min |
+| Practice mode | Settings toggle for indoor demos. No walk needed; not counted in stats or streaks |
+| Screen time | Page Visibility API: time Outward is visible vs total chapter time, shown as "% phone-free" |
+| Walk path | Canvas drawing from GPS points; no map tiles, nothing leaves the phone |
+| Streak | Consecutive days with a finished (non-practice) chapter |
 
 ## Repo layout
 
@@ -119,7 +131,7 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 1. ✅ Offline PWA on Render with static story and missions
 2. ✅ On-device Gemma 3 270M (wllama, WebGPU/CPU) writing continuations, plus a field-test lab
 3. ✅ Voice in (Whisper, on-device) and out (ElevenLabs narration, 16 clips, 5.1 min, + device voice)
-4. GPS walk path, chapter unlocks, screen-time tracking, streaks
+4. ✅ GPS walk path, walking-gated missions, screen-time tracking, streaks
 5. Tinker teacher fine-tune + eval
 6. Distillation → Gemma student → swap into the app
 7. Story factory on Render + Sentry Agent Tracing

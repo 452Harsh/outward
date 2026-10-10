@@ -71,6 +71,9 @@ export default function Settings({ prefs, onPrefs, onNavigate, onBack }) {
         <button class="link" onClick={() => onPrefs({ narration: !prefs.narration })}>
           Narration: {prefs.narration ? 'on' : 'off'}
         </button>
+        <button class="link" onClick={() => onPrefs({ practice: !prefs.practice })}>
+          Practice mode (no walk needed, not counted): {prefs.practice ? 'on' : 'off'}
+        </button>
         <button class="link" onClick={() => onNavigate('diagnostics')}>
           Diagnostics
         </button>
