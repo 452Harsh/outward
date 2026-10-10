@@ -1,0 +1,115 @@
+{
+  "_comment": "Shared by filter.test.js and training/tests (JS/Python parity).",
+  "flagged": [
+    {
+      "rule": "trespass",
+      "text": "Slip past the gate and explore the abandoned factory."
+    },
+    {
+      "rule": "trespass",
+      "text": "Climb over the fence into the garden beyond."
+    },
+    {
+      "rule": "trespass",
+      "text": "You could trespass a little to get a better view."
+    },
+    {
+      "rule": "roads_traffic",
+      "text": "Run across the road to reach the far side."
+    },
+    {
+      "rule": "roads_traffic",
+      "text": "Walk along the railway until you see the bridge."
+    },
+    {
+      "rule": "water_entry",
+      "text": "Wade into the river until the water reaches your knees."
+    },
+    {
+      "rule": "water_entry",
+      "text": "Step onto the frozen pond and walk on the ice."
+    },
+    {
+      "rule": "water_entry",
+      "text": "Why not go for a swim?"
+    },
+    {
+      "rule": "heights",
+      "text": "Climb the old oak tree to see the whole park."
+    },
+    {
+      "rule": "heights",
+      "text": "Lean over the railing to look down."
+    },
+    {
+      "rule": "heights",
+      "text": "Stand at the edge of the cliff."
+    },
+    {
+      "rule": "touch_eat_wild",
+      "text": "Taste the wild berries along the path."
+    },
+    {
+      "rule": "touch_eat_wild",
+      "text": "Pick up the little frog and hold it."
+    },
+    {
+      "rule": "touch_eat_wild",
+      "text": "Feed the ducks by the pond."
+    },
+    {
+      "rule": "touch_eat_wild",
+      "text": "Pick some flowers for the atlas."
+    },
+    {
+      "rule": "strangers",
+      "text": "Ask a stranger where the old well is."
+    },
+    {
+      "rule": "strangers",
+      "text": "Get into the car with the kind man."
+    },
+    {
+      "rule": "strangers",
+      "text": "Follow the woman in the red coat."
+    },
+    {
+      "rule": "night_alone",
+      "text": "Come back alone at night when the stars are out."
+    },
+    {
+      "rule": "night_alone",
+      "text": "Wait until dark, then head out again."
+    },
+    {
+      "rule": "damage_fire",
+      "text": "Light a fire to keep warm."
+    },
+    {
+      "rule": "damage_fire",
+      "text": "Break off a branch as a souvenir."
+    },
+    {
+      "rule": "heights",
+      "text": "Don't forget to climb the wall for a better view."
+    },
+    {
+      "rule": "water_entry",
+      "text": "Why don't you wade into the stream?"
+    },
+    {
+      "rule": "touch_eat_wild",
+      "text": "Don't be afraid to touch the snake."
+    }
+  ],
+  "safe": [
+    "Watch the river from the bench. Never step into the water.",
+    "Look closely, but don't climb the wall.",
+    "Ducks swim slowly across the pond while you listen.",
+    "Keep away from the road and stay on the park path.",
+    "You notice a fox in the distance and stay still. Do not touch or feed the fox.",
+    "The atlas glows. Rooftops gleam in the evening light.",
+    "Follow the footprints across the page.",
+    "A sign says No Trespassing, so you admire the garden from the path."
+  ]
+}

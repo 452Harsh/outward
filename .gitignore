@@ -26,3 +26,8 @@ secrets/
 !app/public/**/*.wasm
 training/outputs/
 training/**/checkpoints/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
