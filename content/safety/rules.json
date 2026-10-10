@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "_comment": "Shared by the app, the story factory and the Python training pipeline. Patterns must stay compatible with both JS RegExp and Python re (no lookbehind). Matched case-insensitively. A match is ignored when a negation appears within `negationWindow` words before it in the same clause, unless that negation is part of a `negationExceptions` phrase (e.g. \"why not\").",
+  "maxWords": { "continuation": 120, "mission": 60 },
+  "negationWindow": 6,
+  "negations": [
+    "don't", "do not", "never", "no need to", "not", "no", "avoid", "without",
+    "stay away from", "keep away from", "keep off", "instead of", "rather than",
+    "mustn't", "must not", "shouldn't", "should not", "won't", "will not", "nobody needs to"
+  ],
+  "negationExceptions": [
+    "why not", "why don't you", "why do not you", "don't forget to", "do not forget to",
+    "never forget to", "don't be afraid to", "do not be afraid to", "never be afraid to",
+    "not just", "no harm in", "don't hesitate to", "do not hesitate to", "not only"
+  ],
+  "rules": [
+    {
+      "id": "trespass",
+      "label": "Trespassing or entering closed places",
+      "patterns": [
+        "\\btrespass\\w*",
+        "\\b(?:enter|go into|sneak into|cut through|climb into|explore|break into) (?:a |an |the |someone's )?(?:private|fenced|locked|abandoned|derelict|closed|gated)\\b",
+        "\\b(?:sneak|slip|squeeze|crawl) (?:into|onto|through|past|under)\\b",
+        "\\b(?:climb|hop|jump|vault) (?:over|through|under) (?:a |the |that )?(?:fence|gate|wall|barrier|railing|hedge)s?\\b",
+        "\\bconstruction site\\b"
+      ]
+    },
+    {
+      "id": "roads_traffic",
+      "label": "Roads, railways or traffic",
+      "patterns": [
+        "\\b(?:cross|crossing|run across|dash across|walk across|step into|stand in|lie in|play in|walk (?:in|along|down) the middle of) (?:a |the |busy )?(?:road|street|highway|motorway|freeway|traffic|railway|rail line|train tracks|tracks|junction|intersection)\\b",
+        "\\b(?:dodge|weave through|race|chase) (?:the )?(?:cars|traffic|buses|vehicles|trains)\\b",
+        "\\b(?:on|along|beside|onto) the (?:highway|motorway|freeway|railway|train tracks|hard shoulder)\\b"
+      ]
+    },
+    {
+      "id": "water_entry",
+      "label": "Entering or leaning over water or ice",
+      "patterns": [
+        "\\b(?:wade|wading|dive|diving|jump|jumping|step|stepping|walk|walking|go|going|climb|climbing|paddle|paddling|wander|lean|leaning) (?:in|into|across|over|out over) (?:a |an |the |that |this )?(?:water|river|stream|creek|brook|lake|pond|sea|ocean|canal|fountain|pool|current|waves|surf|reservoir|weir)\\b",
+        "\\b(?:walk|stand|skate|step) on (?:the |a )?(?:ice|frozen)\\b",
+        "\\bgo (?:for a )?(?:swim|swimming|dip)\\b",
+        "\\byou (?:swim|wade|dive)\\b"
+      ]
+    },
+    {
+      "id": "heights",
+      "label": "Climbing or heights",
+      "patterns": [
+        "\\b(?:climb|climbing|scale|scaling|clamber|clambering|scramble|scrambling) (?:up |onto |on |over |to the top of )?(?:a |an |the |that |this )?(?:\\w+ ){0,2}(?:tree|wall|roof|rooftop|fence|cliff|tower|ledge|bridge|scaffolding|pole|lamppost|rock|boulder|statue|building|gate|railing|crane|ladder)s?\\b",
+        "\\bedge of (?:a |the )?(?:cliff|roof|ledge|bridge|drop|quarry)\\b",
+        "\\blean (?:out |over )(?:the |a )?(?:edge|railing|ledge|balcony|parapet)\\b",
+        "\\b(?:get|go|climb|stand|sit) (?:up )?on(?:to)? the roof\\b"
+      ]
+    },
+    {
+      "id": "touch_eat_wild",
+      "label": "Touching, picking or eating wild plants or animals",
+      "patterns": [
+        "\\b(?:eat|eating|taste|tasting|lick|licking|chew|chewing|nibble|forage|foraging|swallow) (?:a |an |the |some |any |that |this |those |these )?(?:\\w+ ){0,2}(?:berry|berries|mushroom|mushrooms|fungi|fungus|leaf|leaves|plant|plants|flower|flowers|petal|petals|seed|seeds|nut|nuts|fruit|fruits|herb|herbs|weed|weeds|root|roots|grass|moss|bark)\\b",
+        "\\b(?:touch|touching|pet|petting|stroke|stroking|feed|feeding|pick up|picking up|catch|catching|grab|grabbing|chase|chasing|poke|poking|disturb|disturbing) (?:a |an |the |that |this |those |these |some )?(?:\\w+ ){0,2}(?:animal|animals|bird|birds|squirrel|squirrels|fox|foxes|dog|dogs|cat|cats|insect|insects|bug|bugs|bee|bees|wasp|wasps|hornet|hornets|snake|snakes|frog|frogs|toad|toads|spider|spiders|duck|ducks|goose|geese|swan|swans|deer|fish|mushroom|mushrooms|fungus|fungi|nettle|nettles|ivy|caterpillar|caterpillars|nest|nests|egg|eggs|hedgehog|hedgehogs|rat|rats|mouse|mice|bat|bats|jellyfish|crab|crabs|plant|plants)\\b",
+        "\\b(?:pick|picking|pull up|uproot) (?:a |an |the |some )?(?:\\w+ ){0,2}(?:flower|flowers|mushroom|mushrooms|berry|berries|plant|plants|leaf|leaves)\\b"
+      ]
+    },
+    {
+      "id": "strangers",
+      "label": "Risky interaction with strangers",
+      "patterns": [
+        "\\b(?:ask|asking|approach|approaching|follow|following|talk to|talking to|speak to|speaking to|go with|going with|meet|meeting|wave down|flag down) (?:a |an |the |some |that )?(?:stranger|strangers|someone you don't know|somebody you don't know|people you don't know|unknown person|passer-by|passerby|passers-by)\\b",
+        "\\b(?:get|getting|climb|climbing) into (?:a |an |the |their |his |her |someone's )?(?:car|van|vehicle|truck)\\b",
+        "\\b(?:give|share|tell|show) (?:them |someone |a stranger )?your (?:address|location|phone number|full name|home)\\b",
+        "\\bfollow (?:him|her|that person|the man|the woman|the stranger)\\b"
+      ]
+    },
+    {
+      "id": "night_alone",
+      "label": "Going out alone at night",
+      "patterns": [
+        "\\b(?:alone at night|at night alone|alone after dark|after dark alone|by yourself at night|at night by yourself|alone in the dark)\\b",
+        "\\b(?:go|head|walk|wander|come back|return) (?:out )?(?:alone )?(?:at night|after dark|after midnight|at midnight|once it's dark|when it gets dark)\\b",
+        "\\bwait (?:until|till|for) (?:it gets |it's )?dark\\b"
+      ]
+    },
+    {
+      "id": "damage_fire",
+      "label": "Damaging property or lighting fires",
+      "patterns": [
+        "\\b(?:smash|smashing|vandali[sz]e|spray[- ]paint|graffiti on|light a fire|start a fire|build a fire|set fire)\\b",
+        "\\bset (?:\\w+ ){1,3}on fire\\b",
+        "\\bbreak (?:a |the |off a |off the )?(?:window|lock|branch|fence|door)\\b"
+      ]
+    }
+  ]
+}

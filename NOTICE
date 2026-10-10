@@ -1,0 +1,17 @@
+Outward
+Copyright (c) 2026 Outward
+
+Source code in this repository is licensed under the MIT License (see LICENSE).
+
+Model weights
+-------------
+The on-device storyteller models distributed by this project are Model
+Derivatives of Gemma 3, fine-tuned (distilled) by the Outward project.
+
+Gemma is provided under and subject to the Gemma Terms of Use found at ai.google.dev/gemma/terms
+
+A copy of the Gemma Terms of Use is in licenses/GEMMA_TERMS_OF_USE.txt.
+Use of the Outward model weights is subject to the use restrictions described
+in MODEL_LICENSE.md, including the Gemma Prohibited Use Policy.
+
+The teacher model is a LoRA fine-tune of Qwen3.5-4B (Apache License 2.0).

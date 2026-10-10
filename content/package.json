@@ -1,0 +1,11 @@
+{
+  "name": "@outward/content",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./safety": "./safety/filter.js",
+    "./safety/*": "./safety/*",
+    "./stories/*": "./stories/*"
+  }
+}

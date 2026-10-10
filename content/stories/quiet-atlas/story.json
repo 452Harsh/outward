@@ -1,0 +1,90 @@
+{
+  "id": "quiet-atlas",
+  "version": 1,
+  "title": "The Quiet Atlas",
+  "tagline": "A map that only fills in when you go outside.",
+  "narrator": "The Archivist",
+  "premise": "An old atlas has gone blank. Its pages only fill again when the Wayfinder (the user) goes outside and names real things they find. The Archivist guides them. Footprints left by an unknown walker run through the pages.",
+  "chapters": [
+    {
+      "id": "ch1",
+      "number": 1,
+      "title": "The First Blank Page",
+      "intro": "The atlas arrived without a sender. Leather cover, brass corners, and three hundred pages, every one of them blank. I am the Archivist, and I have kept this book for a very long time. It used to show the whole world. Then, one by one, the pages went quiet. They will only fill again for someone who goes outside and notices things. Real things. That is you, Wayfinder. Put the phone in your pocket and start walking. I will tell you what the first page needs.",
+      "mission": {
+        "id": "flows",
+        "prompt": "The first page needs something that flows. A river, a tap, rainwater running down a drain, a flag rippling in the wind. Find something that moves and keeps on moving.",
+        "examples": ["a stream", "rainwater in a gutter", "a drinking fountain", "a flag in the wind"],
+        "safetyNote": "Watch from where you stand. Never step into water or lean over edges."
+      },
+      "storyContext": "Chapter 1. The atlas is blank. The Wayfinder must find something that flows so the first page can draw its first line.",
+      "continuationTemplate": "You hold the atlas open and name what you found: \"{discovery}.\" The book trembles. On the first page a thin blue line appears, then branches, then curls into a current that runs off the edge of the paper. The Archivist lets out a long breath. \"That is the first new line in a very long time. The page remembers how things move now. Keep walking, Wayfinder. Something is waiting at the end of that line.\"",
+      "cliffhanger": "The ink settles. The blue line is beautiful. But near the bottom corner there is a second mark. Small. Deliberate. A single footprint, pressed into the paper in ink you did not bring. Someone else has been inside this atlas. And the footprint is facing your way.",
+      "unlock": { "minMeters": { "10": 250, "30": 700, "60": 1400 } }
+    },
+    {
+      "id": "ch2",
+      "number": 2,
+      "title": "Older Than You",
+      "intro": "Welcome back, Wayfinder. I studied that footprint all night. It is old ink, older than the river line. Whoever left it walked these pages long before you did. To follow old tracks, the atlas needs something old to hold on to. Head outside and look slowly. The world is full of things that were here before you, and they rarely ask for attention.",
+      "mission": {
+        "id": "older",
+        "prompt": "Find something that has been here longer than you have. An old tree, a worn stone step, a weathered wall, a rusty gate.",
+        "examples": ["an old oak tree", "a worn stone step", "a weathered brick wall", "a rusty gate"],
+        "safetyNote": "Look closely, but keep your feet on the ground. No climbing."
+      },
+      "storyContext": "Chapter 2. A mysterious footprint appeared on page one. The Wayfinder must find something old so the atlas can anchor the second page and follow the tracks.",
+      "continuationTemplate": "\"{discovery},\" you tell the atlas. For a moment nothing happens. Then the second page darkens like paper left in the sun, and rings spread across it, slow and patient, the way a tree counts its years. The Archivist leans in. \"Old things make strong anchors. The page will hold now. And look. The footprints continue across it, heading somewhere neither of us has been.\"",
+      "cliffhanger": "You follow the footprints to the edge of the page. Beside the last one, someone has written a date in tiny, careful letters. The Archivist goes very quiet, then reads it aloud. The date is tomorrow.",
+      "unlock": { "minMeters": { "10": 250, "30": 700, "60": 1400 } }
+    },
+    {
+      "id": "ch3",
+      "number": 3,
+      "title": "The Pattern Keepers",
+      "intro": "A date that has not happened yet. I did not sleep. I searched the old indexes and found a name for the people who walked these pages before us: the Pattern Keepers. They believed the world holds itself together with repetition. Brick after brick. Leaf after leaf. Step after step. If we are going to read their trail, the atlas needs to learn their language. Go outside and look for rhythm.",
+      "mission": {
+        "id": "pattern",
+        "prompt": "Find a pattern that repeats. Bricks in a wall, railings along a path, leaves on a branch, tiles, ripples, stripes on an awning.",
+        "examples": ["bricks in a wall", "fence railings", "leaves on a branch", "paving tiles"],
+        "safetyNote": "Keep to paths and pavements, and look from somewhere safe to stand."
+      },
+      "storyContext": "Chapter 3. The footprints led to a date that is tomorrow. The Pattern Keepers wrote in repetition. The Wayfinder must find a repeating pattern so the atlas can read their trail.",
+      "continuationTemplate": "You describe it: \"{discovery}.\" The third page answers at once. A grid blooms across the paper, then shifts, repeating your pattern smaller and smaller until it looks like a code. The Archivist traces it with one finger. \"This is how the Keepers wrote. Not in words, in rhythm. You are reading it already, Wayfinder. You just have to keep looking.\"",
+      "cliffhanger": "The patterns begin to move. They slide across the page and line up into an arrow, pointing at a corner of the map that is still completely blank. Then, as you watch, the tip of the arrow starts to fade. Someone, on the other side of the page, is erasing it.",
+      "unlock": { "minMeters": { "10": 250, "30": 700, "60": 1400 } }
+    },
+    {
+      "id": "ch4",
+      "number": 4,
+      "title": "What the Wind Carries",
+      "intro": "Something is erasing the atlas faster than we can fill it. But erasers are noisy things, and the Keepers left a note in the margin: listen before you look. This chapter is different. You will need your ears more than your eyes. Find a place that feels calm and safe, away from traffic. When you get there, stop. Stand still. Let the world come to you.",
+      "mission": {
+        "id": "sound",
+        "prompt": "Stand still for thirty seconds and listen. Find a sound you can only hear outside. Birdsong, leaves moving, a distant bell, running water, the wind.",
+        "examples": ["birdsong", "leaves rustling", "a distant church bell", "wind through grass"],
+        "safetyNote": "Pick a calm spot away from roads, and keep your surroundings in view."
+      },
+      "storyContext": "Chapter 4. Someone is erasing the atlas. The Keepers said to listen before you look. The Wayfinder must find a sound only heard outside so the atlas can hear what is coming.",
+      "continuationTemplate": "You hold the sound in your head and name it: \"{discovery}.\" The fourth page does not draw lines this time. It ripples, like the surface of a pond after a pebble. Faint shapes rise out of it: the outline of a path, a gate, a bend in the trail. \"Sound travels where ink cannot,\" the Archivist says softly. \"You have given the atlas ears. Now it can hear what is coming.\"",
+      "cliffhanger": "The atlas has been recording everything you heard. You scroll back through it: the sounds you named, the wind, the world. And then one more sound you never noticed. Footsteps, matching your pace exactly. The prints on the first page were not left long ago. Someone has been walking beside you the whole time.",
+      "unlock": { "minMeters": { "10": 250, "30": 700, "60": 1400 } }
+    },
+    {
+      "id": "ch5",
+      "number": 5,
+      "title": "The Other Wayfinder",
+      "intro": "I owe you the truth, Wayfinder. I knew someone else had walked these pages. I did not know they were still walking. The footsteps, the date, the erased arrow. Whoever they are, I do not think they want to destroy the atlas. I think they are making room. There is one page left. To fill it, we need to understand them. Go outside one last time, and look for kindness.",
+      "mission": {
+        "id": "kindness",
+        "prompt": "Find something someone left for others. A bench, a planted flowerbed, a mural, a little free library, a bird box, a path someone keeps clear.",
+        "examples": ["a memorial bench", "a community flowerbed", "a painted mural", "a little free library"],
+        "safetyNote": "Admire it as you find it. No need to touch, move, or take anything."
+      },
+      "storyContext": "Chapter 5, the finale. The footsteps belong to another Wayfinder who has been walking beside the user. The Wayfinder must find something left for others, an act of care, to fill the last page.",
+      "continuationTemplate": "\"{discovery},\" you say. Someone made that, or kept it, or left it there for people they would never meet. The final page floods with colour. Every line from every chapter joins up, the river, the rings, the patterns, the sounds, into one map of your walks drawn as a single thread. Beside the thread, the footprints finally stop.",
+      "cliffhanger": "At the end of the footprints is a note, in the same careful handwriting as the date. It says: I was the last Wayfinder. I erased the old map so you could draw your own. Now it is your turn to leave something for whoever comes next. The Archivist closes the atlas gently. On the back cover, blank this morning, a second atlas has appeared. Its pages are waiting.",
+      "unlock": { "minMeters": { "10": 250, "30": 700, "60": 1400 } }
+    }
+  ]
+}

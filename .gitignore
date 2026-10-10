@@ -1,0 +1,28 @@
+node_modules/
+dist/
+dev-dist/
+.env
+.env.*
+!.env.example
+
+# Keys and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+.huggingface/
+secrets/
+.DS_Store
+*.log
+
+# Model weights never go in Git (Render disk + Hugging Face instead)
+.models/
+*.safetensors
+*.gguf
+*.bin
+*.wasm
+!app/public/**/*.wasm
+training/outputs/
+training/**/checkpoints/

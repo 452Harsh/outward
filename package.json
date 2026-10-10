@@ -1,0 +1,30 @@
+{
+  "name": "outward",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "content",
+    "app",
+    "server"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev -w app",
+    "dev:server": "npm run dev -w server",
+    "build": "npm run build -w app",
+    "start": "npm start -w server",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:safety": "vitest run content/safety",
+    "check": "npm run lint && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.13.0",
+    "vitest": "^5.0.3"
+  }
+}

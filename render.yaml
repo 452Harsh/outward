@@ -1,0 +1,21 @@
+# One-click deploy: Render dashboard → New → Blueprint → pick this repo.
+# Cost (paid Starter plan + disk) is estimated in docs/render-costs.md. Review it before applying.
+services:
+  - type: web
+    name: outward
+    runtime: node
+    plan: starter            # $7/month, no sleeping
+    region: singapore        # closest Render region to India
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: MODELS_DIR
+        value: /var/data/models
+    # Persistent disk for model weights (uploaded in phase 2). Disks can grow later but never shrink.
+    disk:
+      name: outward-data
+      mountPath: /var/data
+      sizeGB: 5
