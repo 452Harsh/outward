@@ -3,8 +3,11 @@ import { getInstalled, loadModel } from '../ai/llm.js';
 import { addSession, clearActiveChapter, saveActiveChapter, saveProgress } from '../db/index.js';
 import { cleanDiscovery, completeChapter, nextStep } from '../engine/story.js';
 import { continueStory } from '../engine/storyteller.js';
-import { buzz, haptics, speak, stopSpeaking } from '../lib/device.js';
+import { clipId, missionText } from '@outward/content/audio/clips.js';
+import { playClip, speakText, stopNarration } from '../audio/narrator.js';
+import { buzz, haptics } from '../lib/device.js';
 import { emptyWalk, trackWalk } from '../sensors/geo.js';
+import VoiceInput from './VoiceInput.jsx';
 
 /** Load the storyteller into memory while the screen is still on. */
 function preloadModel() {
@@ -40,17 +43,18 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     return next;
   };
 
-  const narrate = (text) => prefs.narration && speak(text);
+  const title = `Chapter ${chapter.number}: ${chapter.title}`;
+  const narrate = (part, text) => prefs.narration && playClip(clipId(chapter.id, part), text, title);
   const { step, discovery, continuation, walk } = state;
 
   useEffect(() => {
     saveActiveChapter(stateRef.current);
-    if (stateRef.current.step === 'intro') narrate(chapter.intro);
+    if (stateRef.current.step === 'intro') narrate('intro', chapter.intro);
     preloadModel();
     const stop = trackWalk(stateRef.current.walk, (w) => update({ walk: w }));
     return () => {
       stop();
-      stopSpeaking();
+      stopNarration();
     };
   }, []);
 
@@ -58,12 +62,12 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     update({ step: to });
     if (to === 'mission') {
       buzz(haptics.missionStart);
-      narrate(`${chapter.mission.prompt} ${chapter.mission.safetyNote}`);
+      narrate('mission', missionText(chapter));
     } else if (to === 'describe') {
       buzz(haptics.found);
-      stopSpeaking();
+      stopNarration();
     } else if (to === 'cliffhanger') {
-      narrate(chapter.cliffhanger);
+      narrate('cliffhanger', chapter.cliffhanger);
     }
   };
 
@@ -74,11 +78,11 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
     const result = await continueStory({ chapter, discovery });
     setBusy(false);
     update({ continuation: result, step: 'continuation' });
-    narrate(result.text);
+    if (prefs.narration) speakText(result.text);
   };
 
   const finish = async () => {
-    stopSpeaking();
+    stopNarration();
     buzz(haptics.chapterEnd);
     const s = stateRef.current;
     const clean = cleanDiscovery(s.discovery);
@@ -145,8 +149,10 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
       {step === 'describe' && (
         <>
           <section class="mission">
-            <label for="discovery" class="eyebrow">
-              What did you find?
+            <p class="eyebrow">What did you find?</p>
+            <VoiceInput onTranscript={(text) => update({ discovery: text })} />
+            <label for="discovery" class="hint">
+              Or type it:
             </label>
             <textarea
               id="discovery"
@@ -155,7 +161,6 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
               placeholder={`e.g. ${chapter.mission.examples[0]}`}
               value={discovery}
               onInput={(e) => update({ discovery: e.currentTarget.value })}
-              autoFocus
             />
           </section>
           <footer class="actions">

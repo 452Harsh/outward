@@ -8,7 +8,10 @@
       "version": "stock-qat-q4_0-7dba9fa",
       "file": "gemma-3-270m-it-qat-Q4_0.gguf",
       "bytes": 241410624,
-      "hf": { "repo": "ggml-org/gemma-3-270m-it-qat-GGUF", "revision": "7dba9faa7cdb58c7dc44b238c7dbb00e391fbf65" },
+      "hf": {
+        "repo": "ggml-org/gemma-3-270m-it-qat-GGUF",
+        "revision": "7dba9faa7cdb58c7dc44b238c7dbb00e391fbf65"
+      },
       "serveFromRender": true,
       "requiresWebGPU": false,
       "nCtx": 1024
@@ -19,10 +22,51 @@
       "version": "stock-qat-q4_0-c2531de",
       "file": "gemma-3-1b-it-qat-Q4_0.gguf",
       "bytes": 720425600,
-      "hf": { "repo": "ggml-org/gemma-3-1b-it-qat-GGUF", "revision": "c2531de7eec944fecd05bb2c23804c50d5a915c4" },
+      "hf": {
+        "repo": "ggml-org/gemma-3-1b-it-qat-GGUF",
+        "revision": "c2531de7eec944fecd05bb2c23804c50d5a915c4"
+      },
       "serveFromRender": false,
       "requiresWebGPU": true,
       "nCtx": 1024
     }
+  },
+  "speech": {
+    "_comment": "Speech-to-text, run with Transformers.js on the CPU (WebAssembly). Always downloaded from Hugging Face (pinned revision).",
+    "id": "whisper-tiny.en",
+    "repo": "onnx-community/whisper-tiny.en",
+    "revision": "2575352d61be1bf7225cf8f8b268a4678025fc58",
+    "dtype": "q8",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 2197
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 1646
+      },
+      {
+        "path": "preprocessor_config.json",
+        "bytes": 339
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 2405679
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 282662
+      },
+      {
+        "path": "onnx/encoder_model_quantized.onnx",
+        "bytes": 10124993
+      },
+      {
+        "path": "onnx/decoder_model_merged_quantized.onnx",
+        "bytes": 30718858
+      }
+    ],
+    "bytes": 43536374
   }
 }

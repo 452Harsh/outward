@@ -468,3 +468,71 @@ progress {
   height: 22px;
   accent-color: var(--accent);
 }
+
+.parts {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 15px;
+}
+.parts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.parts li span:last-child {
+  color: var(--muted);
+  text-align: right;
+}
+
+.voice {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 12px 0 20px;
+}
+.mic {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.mic svg {
+  width: 48px;
+  height: 48px;
+  fill: currentColor;
+}
+.mic.listening {
+  background: var(--warn);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.mic.thinking {
+  opacity: 0.6;
+}
+.mic:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 4px;
+}
+.mic-label {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+  min-height: 1.5em;
+}
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 16px color-mix(in srgb, var(--warn) 25%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mic.listening {
+    animation: none;
+  }
+}

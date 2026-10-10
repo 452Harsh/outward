@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'preact/hooks';
 import { getMeta, setMeta } from '../db/index.js';
 import { getChosenModel, isInstalled } from '../ai/llm.js';
+import { isSpeechInstalled } from '../ai/stt.js';
 import { detectWebGPU, formatBytes, getOfflineStatus, getStorageInfo, isAndroid } from '../lib/device.js';
 import BatteryTip from './BatteryTip.jsx';
-import ModelDownload from './ModelDownload.jsx';
+import SetupDownloads from './SetupDownloads.jsx';
 
 export default function Setup({ onDone }) {
   const [offline, setOffline] = useState(null);
@@ -11,6 +12,7 @@ export default function Setup({ onDone }) {
   const [gpu, setGpu] = useState(null);
   const [model, setModel] = useState(null);
   const [modelReady, setModelReady] = useState(null);
+  const [speechReady, setSpeechReady] = useState(null);
   const [skipped, setSkipped] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
@@ -30,6 +32,7 @@ export default function Setup({ onDone }) {
       setModel(m);
       setModelReady(await isInstalled(m).catch(() => false));
     });
+    isSpeechInstalled().then((ok) => !cancelled && setSpeechReady(ok), () => setSpeechReady(false));
     getMeta('batteryTipSeen', false).then((seen) => !cancelled && setShowTip(isAndroid() && !seen));
     return () => {
       cancelled = true;
@@ -38,7 +41,7 @@ export default function Setup({ onDone }) {
 
   const devMode = import.meta.env.DEV;
   const appReady = offline?.ready || devMode || offline?.supported === false;
-  const ready = appReady && (modelReady || skipped);
+  const ready = appReady && ((modelReady && speechReady) || skipped);
 
   return (
     <main class="screen">
@@ -57,6 +60,10 @@ export default function Setup({ onDone }) {
           <span>Storyteller</span>
           <span>{modelReady ? 'Saved offline' : skipped ? 'Pre-written story' : model ? formatBytes(model.bytes) : '…'}</span>
         </li>
+        <li class={speechReady ? 'done' : 'pending'}>
+          <span>Voice input</span>
+          <span>{speechReady ? 'Saved offline' : skipped ? 'Typing only' : speechReady === null ? '…' : 'Not downloaded'}</span>
+        </li>
         <li class={gpu === null ? 'pending' : gpu.supported ? 'done' : 'warn'}>
           <span>GPU (WebGPU)</span>
           <span>{gpu === null ? 'Checking…' : gpu.supported ? 'Supported' : 'Not supported, using CPU'}</span>
@@ -67,11 +74,19 @@ export default function Setup({ onDone }) {
         </li>
       </ul>
 
-      {model && modelReady === false && !skipped && (
+      {model && (modelReady === false || speechReady === false) && !skipped && (
         <>
-          <ModelDownload model={model} onInstalled={() => setModelReady(true)} />
+          <SetupDownloads
+            model={model}
+            needModel={!modelReady}
+            needSpeech={!speechReady}
+            onDone={() => {
+              setModelReady(true);
+              setSpeechReady(true);
+            }}
+          />
           <button class="link" onClick={() => setSkipped(true)}>
-            Skip for now and use the pre-written story
+            Skip for now (pre-written story, typing only)
           </button>
         </>
       )}

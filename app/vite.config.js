@@ -33,10 +33,13 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Includes the llama.cpp runtime (wllama.wasm, ~9 MB) so the storyteller works offline.
-        // Model weights are not here: wllama keeps them in OPFS.
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,wasm}'],
-        maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
+        // Includes the llama.cpp runtime (wllama.wasm, ~9 MB), the ONNX runtime for Whisper (~14 MB)
+        // and the narration clips, so all of it works offline. Model weights are not here:
+        // wllama keeps them in OPFS and Transformers.js in Cache Storage.
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,ico,webmanifest,wasm,mp3}'],
+        maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
+        // ONNX Runtime also references its WebGPU builds; Whisper uses the CPU build only.
+        globIgnores: ['**/*.asyncify*', '**/*.jsep*', '**/*.jspi*'],
         navigateFallback: '/index.html',
         // Model weights are cached by WebLLM itself (phase 2); the API is network-only.
         navigateFallbackDenylist: [/^\/api\//, /^\/models\//],

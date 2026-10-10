@@ -28,3 +28,7 @@ export function modelUrls(m, source = 'hf', origin = '') {
   urls.push(hfUrl(m));
   return urls;
 }
+
+export function getSpeechModel() {
+  return registry.speech;
+}

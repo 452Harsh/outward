@@ -6,7 +6,7 @@ Outward is an installable web app (PWA) that turns a walk into an adventure. You
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
 
-> **Status:** Phase 2 of 8. The offline PWA, the 5-chapter story, and an on-device Gemma 3 270M storyteller work in airplane mode. Voice, the walk path, and the fine-tuning pipeline come next (see [Roadmap](#roadmap)).
+> **Status:** Phase 3 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode. The walk path and the fine-tuning pipeline come next (see [Roadmap](#roadmap)).
 
 ## On-device AI
 
@@ -18,6 +18,8 @@ After one install, it works fully offline: no signal needed, and nothing about y
 | Model source | Hugging Face during development. Demo build (`VITE_MODEL_SOURCE=render`): Render first, Hugging Face as fallback |
 | Caching | OPFS, keyed by a versioned URL. A phone re-downloads only when `content/models.json` changes. One model per phone |
 | Fallback | If there's no model, generation fails, takes over 30 s, or fails the safety/quality checks, a pre-written continuation is used |
+| Voice in | Whisper tiny.en (int8, 43.5 MB) via Transformers.js on the CPU, in a worker. Recording and transcription never leave the phone |
+| Voice out | Fixed narration: ElevenLabs clips (64 kbps mono) through one audio player with lock-screen controls. Model-written text: the device voice. Clips not generated yet fall back to the device voice |
 
 Run `npm run size` after a build for the install size by part.
 
@@ -64,6 +66,15 @@ VITE_MODEL_SOURCE=render npm run build
 
 **Settings → Screen-off field test** logs what keeps working with the phone locked in a pocket: GPS, timers, background audio, speech and generation. Use **Copy full log** to share the results.
 
+### Narration (ElevenLabs)
+
+```bash
+node scripts/narration.mjs          # dry run: clips, characters, credits; spends nothing
+node scripts/narration.mjs --yes    # generate missing/changed clips into app/public/audio
+```
+
+This needs `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` in `.env`. Clip file names hash the voice, model and text, so only changed clips are regenerated. The key is used only by this script, never in the app.
+
 ### Checks
 
 ```bash
@@ -99,7 +110,7 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 
 1. ✅ Offline PWA on Render with static story and missions
 2. ✅ On-device Gemma 3 270M (wllama, WebGPU/CPU) writing continuations, plus a field-test lab
-3. Voice in (Whisper, on-device) and out (ElevenLabs narration + speechSynthesis)
+3. ✅ Voice in (Whisper, on-device) and out (ElevenLabs narration player + device voice); clips pending a key
 4. GPS walk path, chapter unlocks, screen-time tracking, streaks
 5. Tinker teacher fine-tune + eval
 6. Distillation → Gemma student → swap into the app
