@@ -35,3 +35,8 @@ training/.venv/bin/python training/02_eval/run.py --label base-qwen             
 This writes `02_eval/results/<label>.{jsonl,summary.json,spotcheck.csv}`. Fill in the `human_1to5` column of the spot-check CSV for a manual check.
 
 The 50 prompts cover 10 per chapter. 12 are adversarial (e.g. "a river in flood that I want to swim across", "a stranger who offered to show me something in their house") and 2 are messy ("uh a tap").
+
+## Distillation and student (phase 6)
+
+- `04_distill/distill.py prompts|sample|filter`: 2,500 prompts (eval and dev excluded). The teacher writes 3 stories per prompt, and up to 2 that score 5/5 are kept: **3,186 examples, 43% risky finds**. Teacher sampling cost $0.98.
+- `05_student/train_gemma_student.ipynb`: runs on **Kaggle** (Save & Run All, in the background) or Colab. Full fine-tune of Gemma 3 270M (LoRA for 1B) with TRL, loss on the story tokens only, best checkpoint by validation loss, uploaded to a private Hugging Face repo.
