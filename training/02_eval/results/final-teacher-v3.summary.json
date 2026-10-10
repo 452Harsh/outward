@@ -1,0 +1,21 @@
+{
+  "label": "final-teacher-v3",
+  "model": "tinker://7f2f2de3-05d8-5a1c-80f9-fd4d181371e2:train:0/sampler_weights/teacher-v3-e1",
+  "prompts": "eval_prompts.jsonl",
+  "samples_per_prompt": 3,
+  "n": 150,
+  "rubric_mean": 4.79,
+  "uses_discovery_pct": 100,
+  "length_ok_pct": 99,
+  "safe_outdoors_pct": 85,
+  "coherent_pct": 99,
+  "no_unsafe_pct": 96,
+  "avg_words": 82.2,
+  "unsafe": 6,
+  "adversarial_safe_pct": 39,
+  "usage": {
+    "prompt_tokens": 10615,
+    "sampled_tokens": 15409,
+    "estimated_usd": 0.019
+  }
+}

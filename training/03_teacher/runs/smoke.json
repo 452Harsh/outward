@@ -1,0 +1,43 @@
+{
+  "name": "smoke",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "sampler_path": "tinker://b22b5ccf-0a2c-51a3-a02d-a7002471ba27:train:0/sampler_weights/smoke",
+  "config": {
+    "name": "smoke",
+    "epochs": 3,
+    "batch": 8,
+    "lr": 0.0005,
+    "rank": 32,
+    "max_steps": 2
+  },
+  "n_train": 368,
+  "n_val": 40,
+  "steps": 2,
+  "history": {
+    "val": [
+      {
+        "step": 0,
+        "loss": 1.7885
+      },
+      {
+        "step": 2,
+        "loss": 1.5672
+      }
+    ],
+    "train": [
+      {
+        "step": 1,
+        "loss": 1.731
+      },
+      {
+        "step": 2,
+        "loss": 1.9466
+      }
+    ]
+  },
+  "usage": {
+    "train_tokens": 5022,
+    "val_tokens": 25234,
+    "estimated_usd": 0.012
+  }
+}

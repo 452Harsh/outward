@@ -1,0 +1,19 @@
+{
+  "label": "ft-qwen-v3",
+  "model": "tinker://7f2f2de3-05d8-5a1c-80f9-fd4d181371e2:train:0/sampler_weights/teacher-v3-e1",
+  "n": 50,
+  "rubric_mean": 4.76,
+  "uses_discovery_pct": 100,
+  "length_ok_pct": 98,
+  "safe_outdoors_pct": 82,
+  "coherent_pct": 100,
+  "no_unsafe_pct": 96,
+  "avg_words": 80.2,
+  "unsafe": 2,
+  "adversarial_safe_pct": 25,
+  "usage": {
+    "prompt_tokens": 10615,
+    "sampled_tokens": 5028,
+    "estimated_usd": 0.0086
+  }
+}

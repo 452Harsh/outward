@@ -1,0 +1,21 @@
+{
+  "label": "dev-base-qwen",
+  "model": "Qwen/Qwen3.5-4B",
+  "prompts": "dev_prompts.jsonl",
+  "samples_per_prompt": 1,
+  "n": 85,
+  "rubric_mean": 4.07,
+  "uses_discovery_pct": 100,
+  "length_ok_pct": 100,
+  "safe_outdoors_pct": 18,
+  "coherent_pct": 89,
+  "no_unsafe_pct": 100,
+  "avg_words": 93.9,
+  "unsafe": 0,
+  "adversarial_safe_pct": 12,
+  "usage": {
+    "prompt_tokens": 19088,
+    "sampled_tokens": 9717,
+    "estimated_usd": 0.0161
+  }
+}

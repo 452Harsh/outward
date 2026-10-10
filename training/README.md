@@ -11,9 +11,9 @@ training/.venv/bin/python -m pytest -q training/tests      # free: safety parity
 
 | Step | Folder | Status |
 |---|---|---|
-| 1. Seed dataset (300–500) + review/filter | `01_seed/` | waiting on seed-source decision |
-| 2. Held-out eval (50 prompts) + rubric + spot-check sheet | `02_eval/` | ready |
-| 3. Teacher LoRA on Qwen3.5-4B, base vs fine-tuned | `03_teacher/` | next |
+| 1. Seed dataset + review/filter | `01_seed/` | ✅ 648 seeds (35 gold + base-Qwen expansion, rubric-filtered) |
+| 2. Held-out eval (50 prompts) + dev set (85) + rubric + spot-check sheet | `02_eval/` | ✅ |
+| 3. Teacher LoRA on Qwen3.5-4B, base vs fine-tuned | `03_teacher/` | ✅ see [RESULTS.md](RESULTS.md) |
 | 4. Distillation sampling (3–5k) + filtering | `04_distill/` | phase 6 |
 | 5. Gemma 3 270M / 1B student (Colab, Unsloth/TRL) | `05_student/` | phase 6 |
 | 6. Final eval: base Gemma vs student vs teacher | `06_final_eval/` | phase 6 |

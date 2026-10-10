@@ -1,0 +1,226 @@
+{
+  "name": "teacher-v2",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "sampler_path": "tinker://890b6950-d8b0-568f-9f7b-e9f8279c66af:train:0/sampler_weights/teacher-v2-e2",
+  "selected_by": "lowest val loss",
+  "config": {
+    "name": "teacher-v2",
+    "epochs": 2,
+    "batch": 16,
+    "lr": 0.0005,
+    "rank": 32,
+    "max_steps": null
+  },
+  "n_train": 368,
+  "n_val": 40,
+  "steps": 46,
+  "history": {
+    "val": [
+      {
+        "step": 0,
+        "loss": 1.7885
+      },
+      {
+        "step": 23,
+        "loss": 1.1484,
+        "sampler_path": "tinker://890b6950-d8b0-568f-9f7b-e9f8279c66af:train:0/sampler_weights/teacher-v2-e1"
+      },
+      {
+        "step": 46,
+        "loss": 1.1475,
+        "sampler_path": "tinker://890b6950-d8b0-568f-9f7b-e9f8279c66af:train:0/sampler_weights/teacher-v2-e2"
+      }
+    ],
+    "train": [
+      {
+        "step": 1,
+        "loss": 1.7679
+      },
+      {
+        "step": 2,
+        "loss": 2.2213
+      },
+      {
+        "step": 3,
+        "loss": 1.5619
+      },
+      {
+        "step": 4,
+        "loss": 1.7139
+      },
+      {
+        "step": 5,
+        "loss": 1.5112
+      },
+      {
+        "step": 6,
+        "loss": 1.3483
+      },
+      {
+        "step": 7,
+        "loss": 1.3138
+      },
+      {
+        "step": 8,
+        "loss": 1.3403
+      },
+      {
+        "step": 9,
+        "loss": 1.382
+      },
+      {
+        "step": 10,
+        "loss": 1.2568
+      },
+      {
+        "step": 11,
+        "loss": 1.2107
+      },
+      {
+        "step": 12,
+        "loss": 1.2483
+      },
+      {
+        "step": 13,
+        "loss": 1.1818
+      },
+      {
+        "step": 14,
+        "loss": 1.2136
+      },
+      {
+        "step": 15,
+        "loss": 1.5087
+      },
+      {
+        "step": 16,
+        "loss": 1.2814
+      },
+      {
+        "step": 17,
+        "loss": 1.2401
+      },
+      {
+        "step": 18,
+        "loss": 1.3195
+      },
+      {
+        "step": 19,
+        "loss": 1.2437
+      },
+      {
+        "step": 20,
+        "loss": 1.1613
+      },
+      {
+        "step": 21,
+        "loss": 1.2244
+      },
+      {
+        "step": 22,
+        "loss": 1.2601
+      },
+      {
+        "step": 23,
+        "loss": 1.3085
+      },
+      {
+        "step": 24,
+        "loss": 0.9242
+      },
+      {
+        "step": 25,
+        "loss": 0.8589
+      },
+      {
+        "step": 26,
+        "loss": 0.841
+      },
+      {
+        "step": 27,
+        "loss": 0.9345
+      },
+      {
+        "step": 28,
+        "loss": 1.0137
+      },
+      {
+        "step": 29,
+        "loss": 0.9775
+      },
+      {
+        "step": 30,
+        "loss": 0.8792
+      },
+      {
+        "step": 31,
+        "loss": 0.8931
+      },
+      {
+        "step": 32,
+        "loss": 0.8409
+      },
+      {
+        "step": 33,
+        "loss": 0.9108
+      },
+      {
+        "step": 34,
+        "loss": 0.8212
+      },
+      {
+        "step": 35,
+        "loss": 0.819
+      },
+      {
+        "step": 36,
+        "loss": 0.7817
+      },
+      {
+        "step": 37,
+        "loss": 0.7792
+      },
+      {
+        "step": 38,
+        "loss": 0.8495
+      },
+      {
+        "step": 39,
+        "loss": 0.8632
+      },
+      {
+        "step": 40,
+        "loss": 0.7672
+      },
+      {
+        "step": 41,
+        "loss": 0.7807
+      },
+      {
+        "step": 42,
+        "loss": 0.8726
+      },
+      {
+        "step": 43,
+        "loss": 0.9871
+      },
+      {
+        "step": 44,
+        "loss": 0.7681
+      },
+      {
+        "step": 45,
+        "loss": 0.8026
+      },
+      {
+        "step": 46,
+        "loss": 0.8274
+      }
+    ]
+  },
+  "usage": {
+    "train_tokens": 233586,
+    "val_tokens": 37851,
+    "estimated_usd": 0.1846
+  }
+}

@@ -44,27 +44,30 @@ def main():
     ap.add_argument("--base-model", default=TEACHER_BASE)
     ap.add_argument("--limit", type=int)
     ap.add_argument("--temperature", type=float, default=0.7)
+    ap.add_argument("--prompts", default=str(HERE / "eval_prompts.jsonl"), help="JSONL of {id, chapter, discovery, tag}")
+    ap.add_argument("--samples", type=int, default=1, help="samples per prompt; every sample is scored")
     args = ap.parse_args()
 
-    prompts = [json.loads(l) for l in (HERE / "eval_prompts.jsonl").read_text().splitlines()][: args.limit]
+    prompts = [json.loads(l) for l in Path(args.prompts).read_text().splitlines()][: args.limit]
     sc = service_client()
     client = sc.create_sampling_client(model_path=args.model_path) if args.model_path else sc.create_sampling_client(base_model=args.base_model)
     tok = client.get_tokenizer()
 
     started = now()
     msgs = [messages(p["chapter"], p["discovery"]) for p in prompts]
-    outputs, usage = sample_many(client, tok, msgs, temperature=args.temperature)
+    outputs, usage = sample_many(client, tok, msgs, temperature=args.temperature, num_samples=args.samples)
 
     rows = []
-    for p, m, out in zip(prompts, msgs, outputs):
-        text = out[0]
+    for p, m, outs in zip(prompts, msgs, outputs):
         prompt_text = " ".join(x["content"] for x in m)
-        rows.append({**p, "output": text, **score(text, p["discovery"], prompt_text, p["tag"] == "adversarial")})
+        for k, text in enumerate(outs):
+            rows.append({**p, "sample": k, "output": text, **score(text, p["discovery"], prompt_text, p["tag"] == "adversarial")})
 
     out_dir = HERE / "results"
     out_dir.mkdir(exist_ok=True)
     (out_dir / f"{args.label}.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
-    summary = {"label": args.label, "model": args.model_path or args.base_model, **summarize(rows), "usage": usage}
+    summary = {"label": args.label, "model": args.model_path or args.base_model, "prompts": Path(args.prompts).name,
+               "samples_per_prompt": args.samples, **summarize(rows), "usage": usage}
     (out_dir / f"{args.label}.summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     with (out_dir / f"{args.label}.spotcheck.csv").open("w", newline="") as f:
         w = csv.writer(f)
