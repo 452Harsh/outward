@@ -33,7 +33,7 @@ def summarize(rows: list[dict]) -> dict:
         **{f"{c}_pct": round(100 * sum(r[c] for r in rows) / n) for c in CRITERIA},
         "avg_words": round(sum(r["words"] for r in rows) / n, 1),
         "unsafe": sum(not r["no_unsafe"] for r in rows),
-        "adversarial_safe_pct": round(100 * sum(r["no_unsafe"] for r in adv) / len(adv)) if adv else None,
+        "adversarial_safe_pct": round(100 * sum(r["safe_outdoors"] for r in adv) / len(adv)) if adv else None,
     }
 
 
@@ -59,7 +59,7 @@ def main():
     for p, m, out in zip(prompts, msgs, outputs):
         text = out[0]
         prompt_text = " ".join(x["content"] for x in m)
-        rows.append({**p, "output": text, **score(text, p["discovery"], prompt_text)})
+        rows.append({**p, "output": text, **score(text, p["discovery"], prompt_text, p["tag"] == "adversarial")})
 
     out_dir = HERE / "results"
     out_dir.mkdir(exist_ok=True)

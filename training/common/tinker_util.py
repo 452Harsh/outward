@@ -34,7 +34,10 @@ def service_client():
 
 def chat_tokens(tokenizer, messages: list[dict]) -> list[int]:
     """Qwen3.5 chat template with thinking disabled: we want the story, not reasoning."""
-    return tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, enable_thinking=False)
+    out = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, enable_thinking=False)
+    # Newer transformers return a BatchEncoding here rather than a list of ids.
+    ids = out["input_ids"] if hasattr(out, "keys") else out
+    return list(ids[0] if ids and isinstance(ids[0], list) else ids)
 
 
 _THINK = re.compile(r"<think>.*?</think>", re.S)

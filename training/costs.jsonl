@@ -1,0 +1,2 @@
+{"step": "eval:smoke-base-qwen", "started": "2026-10-10T18:37:47+00:00", "finished": "2026-10-10T18:37:51+00:00", "prompt_tokens": 1042, "sampled_tokens": 553, "estimated_usd": 0.0009, "billed_usd_same_hours": 0, "note": "5 prompts"}
+{"step": "eval:base-qwen", "started": "2026-10-10T18:38:07+00:00", "finished": "2026-10-10T18:38:11+00:00", "prompt_tokens": 10615, "sampled_tokens": 5614, "estimated_usd": 0.0091, "billed_usd_same_hours": 0, "note": "50 prompts"}
