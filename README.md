@@ -73,7 +73,15 @@ node scripts/narration.mjs          # dry run: clips, characters, credits; spend
 node scripts/narration.mjs --yes    # generate missing/changed clips into app/public/audio
 ```
 
-This needs `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` in `.env`. Clip file names hash the voice, model and text, so only changed clips are regenerated. The key is used only by this script, never in the app.
+This needs `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` in `.env` (current voice: George, "Warm, Captivating Storyteller", `eleven_multilingual_v2`). Clip file names hash the voice, model and text, so only changed clips are regenerated. The key is used only by this script, never in the app.
+
+### Keep keys out of Git
+
+```bash
+cp scripts/pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+This blocks commits of `.env`, and of any change that looks like an API key. Keys go only in `.env`, never in `.env.example`.
 
 ### Checks
 
@@ -110,7 +118,7 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 
 1. ✅ Offline PWA on Render with static story and missions
 2. ✅ On-device Gemma 3 270M (wllama, WebGPU/CPU) writing continuations, plus a field-test lab
-3. ✅ Voice in (Whisper, on-device) and out (ElevenLabs narration player + device voice); clips pending a key
+3. ✅ Voice in (Whisper, on-device) and out (ElevenLabs narration, 16 clips, 5.1 min, + device voice)
 4. GPS walk path, chapter unlocks, screen-time tracking, streaks
 5. Tinker teacher fine-tune + eval
 6. Distillation → Gemma student → swap into the app
