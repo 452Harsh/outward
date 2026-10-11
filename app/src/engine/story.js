@@ -46,3 +46,11 @@ export function cleanDiscovery(text) {
 export function templateContinuation(chapter, discovery) {
   return chapter.continuationTemplate.replace('{discovery}', cleanDiscovery(discovery));
 }
+
+/** The "Find …" sentence of a mission, for short teasers; falls back to the first sentence. */
+export function missionHeadline(prompt) {
+  const sentences = String(prompt).split(/(?<=[.!?])\s+/);
+  const pick = sentences.find((s) => /^find\b/i.test(s)) ?? sentences.find((s) => /\bfind\b/i.test(s)) ?? sentences[0];
+  // "Find X: a, b, c." -> "Find X" (examples are shown on the mission card).
+  return pick.includes(':') ? pick.split(':')[0].trim() : pick;
+}

@@ -2,6 +2,7 @@ import { Fragment } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import * as llm from '../ai/llm.js';
 import { getSessions } from '../db/index.js';
+import Sprig from '../ui/Sprig.jsx';
 import { buildMessages } from '../engine/prompt.js';
 import { getStory } from '../engine/story.js';
 import { detectWebGPU, formatBytes, getDeviceInfo, getStorageInfo } from '../lib/device.js';
@@ -16,6 +17,29 @@ export default function Diagnostics({ onBack }) {
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sessions, setSessions] = useState([]);
+  const [fps, setFps] = useState(null);
+  const [fpsRunning, setFpsRunning] = useState(false);
+
+  // Animation smoothness: run Sprig's busiest states for 5 s and measure frames.
+  const runFps = () => {
+    setFpsRunning(true);
+    setFps(null);
+    const gaps = [];
+    let last = performance.now();
+    const end = last + 5000;
+    const tick = (t) => {
+      gaps.push(t - last);
+      last = t;
+      if (t < end) requestAnimationFrame(tick);
+      else {
+        gaps.shift();
+        const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+        setFps({ fps: Math.round(1000 / avg), janky: Math.round((100 * gaps.filter((g) => g > 25).length) / gaps.length), frames: gaps.length });
+        setFpsRunning(false);
+      }
+    };
+    requestAnimationFrame(tick);
+  };
   const device = getDeviceInfo();
 
   useEffect(() => {
@@ -47,7 +71,7 @@ export default function Diagnostics({ onBack }) {
     setRunning(false);
   };
 
-  const report = { device, gpu, storage, model, bench, sessions };
+  const report = { device, gpu, storage, model, bench, fps, sessions };
   const byModel = sessions.filter((s) => s.continuationSource === 'model').length;
   const copy = async () => {
     try {
@@ -132,6 +156,29 @@ export default function Diagnostics({ onBack }) {
         {bench[0]?.text && <p class="sample">“{bench[0].text.trim()}”</p>}
         <button class="btn" onClick={runBenchmark} disabled={running || !model}>
           {running ? 'Running…' : model ? 'Run benchmark' : 'Download a model first'}
+        </button>
+      </section>
+
+      <section class="card kv">
+        <h2>Animation smoothness</h2>
+        {fpsRunning && (
+          <div class="stats2">
+            <Sprig state="walking" step={0.5} size={110} />
+            <Sprig state="celebrating" size={110} />
+          </div>
+        )}
+        {fps && (
+          <dl>
+            <dt>Frame rate</dt>
+            <dd>{fps.fps} fps</dd>
+            <dt>Slow frames</dt>
+            <dd>
+              {fps.janky}% over 25 ms ({fps.frames} frames)
+            </dd>
+          </dl>
+        )}
+        <button class="btn" onClick={runFps} disabled={fpsRunning}>
+          {fpsRunning ? 'Measuring for 5 s…' : 'Test animation smoothness'}
         </button>
       </section>
 

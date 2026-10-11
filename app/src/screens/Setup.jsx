@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { getMeta, setMeta } from '../db/index.js';
-import { getChosenModel, isInstalled } from '../ai/llm.js';
-import { isSpeechInstalled } from '../ai/stt.js';
-import { detectWebGPU, formatBytes, getOfflineStatus, getStorageInfo, isAndroid } from '../lib/device.js';
+import { MODEL_SOURCE, downloadModel, getChosenModel, isInstalled } from '../ai/llm.js';
+import { downloadSpeech, isSpeechInstalled, speechBytes } from '../ai/stt.js';
+import { detectWebGPU, formatBytes, getConnection, getOfflineStatus, getStorageInfo, isAndroid } from '../lib/device.js';
+import { sfx } from '../lib/sfx.js';
+import Icon from '../ui/icons.jsx';
+import Sprig from '../ui/Sprig.jsx';
+import { Bubble } from '../ui/widgets.jsx';
 import BatteryTip from './BatteryTip.jsx';
-import SetupDownloads from './SetupDownloads.jsx';
 
+/** First launch: Sprig packs the backpack while the storyteller and voice download. */
 export default function Setup({ onDone }) {
   const [offline, setOffline] = useState(null);
   const [storage, setStorage] = useState(null);
@@ -15,6 +19,9 @@ export default function Setup({ onDone }) {
   const [speechReady, setSpeechReady] = useState(null);
   const [skipped, setSkipped] = useState(false);
   const [showTip, setShowTip] = useState(false);
+  const [dl, setDl] = useState({ state: 'idle', speech: 0, model: 0, error: null });
+  const abort = useRef(null);
+  const conn = getConnection();
 
   useEffect(() => {
     let cancelled = false;
@@ -42,61 +49,85 @@ export default function Setup({ onDone }) {
   const devMode = import.meta.env.DEV;
   const appReady = offline?.ready || devMode || offline?.supported === false;
   const ready = appReady && ((modelReady && speechReady) || skipped);
+  const needBytes = (speechReady ? 0 : speechBytes) + (modelReady || !model ? 0 : model.bytes);
+  const packing = dl.state === 'downloading';
+
+  const download = async () => {
+    sfx('tap');
+    setDl({ state: 'downloading', speech: 0, model: 0, error: null });
+    abort.current = new AbortController();
+    try {
+      if (!speechReady) {
+        await downloadSpeech({ onProgress: (done, total) => setDl((d) => ({ ...d, speech: done / total })) });
+        setSpeechReady(true);
+      }
+      if (!modelReady) {
+        await downloadModel(model.id, {
+          signal: abort.current.signal,
+          onProgress: (done, total) => setDl((d) => ({ ...d, model: done / total })),
+        });
+        setModelReady(true);
+      }
+      setDl((d) => ({ ...d, state: 'done' }));
+      sfx('complete');
+    } catch (err) {
+      setDl((d) => ({ ...d, state: abort.current.signal.aborted ? 'idle' : 'error', error: String(err?.message ?? err) }));
+    }
+  };
+
+  const pct = (v) => `${Math.round(v * 100)}%`;
+  const items = [
+    { key: 'app', label: 'App and story', done: offline?.ready || devMode, status: offline?.ready ? 'packed' : devMode ? 'dev mode' : 'packing…' },
+    {
+      key: 'voice',
+      label: `Voice (${formatBytes(speechBytes)})`,
+      done: speechReady,
+      status: speechReady ? 'packed' : packing ? pct(dl.speech) : skipped ? 'typing only' : 'to pack',
+    },
+    {
+      key: 'model',
+      label: `Storyteller (${model ? formatBytes(model.bytes) : '…'})`,
+      done: modelReady,
+      status: modelReady ? 'packed' : packing ? pct(dl.model) : skipped ? 'pre-written story' : 'to pack',
+    },
+  ];
 
   return (
     <main class="screen">
-      <header>
-        <p class="eyebrow">Setup</p>
-        <h1>{ready ? 'Ready. No internet needed.' : 'Getting Outward ready'}</h1>
-        <p class="lede">Outward downloads everything once, then works in airplane mode.</p>
-      </header>
+      <div class="stage-sprig">
+        <Bubble>
+          {ready
+            ? 'All packed! From here on, no internet needed.'
+            : packing
+              ? 'Packing the backpack… keep this screen open.'
+              : `Let me pack for our first walk. It's ${formatBytes(needBytes)}, once.`}
+        </Bubble>
+        <Sprig state={ready ? 'celebrating' : packing ? 'ready' : 'idle'} size={150} />
+      </div>
 
-      <ul class="checklist">
-        <li class={offline?.ready ? 'done' : 'pending'}>
-          <span>App and story</span>
-          <span>{offline?.ready ? 'Saved offline' : offline === null ? 'Checking…' : devMode ? 'Dev mode' : 'Saving…'}</span>
-        </li>
-        <li class={modelReady ? 'done' : 'pending'}>
-          <span>Storyteller</span>
-          <span>{modelReady ? 'Saved offline' : skipped ? 'Pre-written story' : model ? formatBytes(model.bytes) : '…'}</span>
-        </li>
-        <li class={speechReady ? 'done' : 'pending'}>
-          <span>Voice input</span>
-          <span>{speechReady ? 'Saved offline' : skipped ? 'Typing only' : speechReady === null ? '…' : 'Not downloaded'}</span>
-        </li>
-        <li class={gpu === null ? 'pending' : gpu.supported ? 'done' : 'warn'}>
-          <span>GPU (WebGPU)</span>
-          <span>{gpu === null ? 'Checking…' : gpu.supported ? 'Supported' : 'Not supported, using CPU'}</span>
-        </li>
-        <li class={storage?.persisted ? 'done' : 'pending'}>
-          <span>Storage</span>
-          <span>{storage ? `${storage.persisted ? 'Persistent' : 'Best effort'} · ${formatBytes(storage.quota)} free` : '…'}</span>
-        </li>
+      <ul class="pack-list" aria-label="Backpack">
+        {items.map((it) => (
+          <li key={it.key} class={it.done ? 'done' : ''}>
+            {it.done ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 12l5 5L20 6" stroke="var(--good)" stroke-width="3" fill="none" />
+              </svg>
+            ) : (
+              <Icon name="map" size={20} />
+            )}
+            {it.label}
+            <b>{it.status}</b>
+          </li>
+        ))}
       </ul>
 
-      {model && (modelReady === false || speechReady === false) && !skipped && (
-        <>
-          <SetupDownloads
-            model={model}
-            needModel={!modelReady}
-            needSpeech={!speechReady}
-            onDone={() => {
-              setModelReady(true);
-              setSpeechReady(true);
-            }}
-          />
-          <button class="link" onClick={() => setSkipped(true)}>
-            Skip for now (pre-written story, typing only)
-          </button>
-        </>
+      {packing && <progress max="1" value={((dl.speech * speechBytes) + dl.model * (model?.bytes ?? 0)) / Math.max(1, needBytes)} />}
+      {dl.state === 'error' && <p class="note warn">Download stopped: {dl.error}. Check the connection and try again.</p>}
+      {!ready && !packing && (conn.type === 'cellular' || conn.saveData) && (
+        <p class="note warn">You're on mobile data. Connect to Wi-Fi first if you can.</p>
       )}
-
-      {gpu && !gpu.supported && (
-        <p class="note warn">
-          This browser has no WebGPU ({gpu.reason}). The storyteller still runs on the CPU, a little slower.
-        </p>
-      )}
-      {offline && !offline.supported && <p class="note warn">This browser can't save the app for offline use.</p>}
+      {gpu && !gpu.supported && <p class="note">No WebGPU here, so the storyteller runs on the CPU, a little slower.</p>}
+      {storage && <p class="hint center-text">{storage.persisted ? 'Saved permanently' : 'Saved'} on this phone · {formatBytes(storage.quota)} free</p>}
 
       {showTip && (
         <BatteryTip
@@ -108,10 +139,28 @@ export default function Setup({ onDone }) {
       )}
 
       <footer class="actions">
-        <button class="btn primary big" onClick={onDone} disabled={!ready}>
-          {ready ? 'Begin' : 'Finish setup to begin'}
-        </button>
+        {ready ? (
+          <button class="btn primary big" onClick={onDone}>
+            Let's go
+          </button>
+        ) : packing ? (
+          <button class="btn big" onClick={() => abort.current?.abort()}>
+            Cancel
+          </button>
+        ) : (
+          <>
+            <button class="btn primary big" onClick={download} disabled={!conn.online || !model || needBytes === 0}>
+              {dl.state === 'error' ? 'Try again' : `Pack ${formatBytes(needBytes)}`}
+            </button>
+            <button class="link" onClick={() => setSkipped(true)}>
+              Skip for now (pre-written story, typing only)
+            </button>
+          </>
+        )}
       </footer>
+      <p class="hint center-text">
+        Storyteller from {MODEL_SOURCE === 'render' && model?.serveFromRender ? 'the Outward server' : 'Hugging Face'}, voice from Hugging Face.
+      </p>
     </main>
   );
 }

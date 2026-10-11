@@ -81,3 +81,12 @@ describe('discoveries', () => {
     expect(text).not.toContain('{discovery}');
   });
 });
+
+describe('missionHeadline', () => {
+  it('picks the "Find" sentence of each mission', async () => {
+    const { missionHeadline } = await import('./story.js');
+    expect(missionHeadline(story.chapters[0].mission.prompt)).toBe('Find something that moves and keeps on moving.');
+    expect(missionHeadline('Look around. Nothing else.')).toBe('Look around.');
+    expect(missionHeadline('The atlas needs light. Find something that shines: a bell, a window.')).toBe('Find something that shines');
+  });
+});

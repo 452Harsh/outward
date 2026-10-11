@@ -35,6 +35,20 @@ Run `npm run size` after a build for the install size by part.
 | Walk path | Canvas drawing from GPS points; no map tiles, nothing leaves the phone |
 | Streak | Consecutive days with a finished (non-practice) chapter |
 
+## Look and feel
+
+Outward plays like a small adventure game, with **Sprig** at the centre. Sprig is an original companion: a pebble-shaped explorer with a sprout, a scarf and a backpack.
+
+- **Sprig** is pure SVG + CSS (about 15 KB, no animation runtime) with 9 states: idle, walking (pace follows GPS), thinking (while the model writes), speaking (mouth follows a loudness track of the clip, or word events from the device voice), listening (rings follow the mic), celebrating, sleepy (3+ days without a walk), ready and wave. Every animation pauses while the page is hidden, and there are calm poses for reduced motion.
+- **Game layer** (`app/src/engine/game.js`), all derived from stored sessions:
+  - **XP:** minutes outside, distance, missions, new places, phone-free walks, finished stories.
+  - **Levels and ranks:** Wanderer → Pathfinder → Trailblazer → Wayfinder → Legend.
+  - **A campfire streak.**
+  - **9 safe badges.** Golden Hour uses an offline sunset formula. There's no "Night Owl", by design.
+- **Screens:** Home (one button), mission card with time choice, "pocket your phone", active mission, listening, story moment with karaoke captions, mission complete (time outside vs. on screen, XP, badges, journal card with optional photo and place name), quest map, journal and badges, and a first launch where Sprig packs the backpack.
+- **Style:** Day (warm paper) and Evening (twilight blue) themes, plus a Theme setting. Self-hosted Baloo 2 and Atkinson Hyperlegible Next (67 KB). Sound effects are synthesised live (no audio files) and can be turned off.
+- **Diagnostics** includes an animation-smoothness test (fps and slow frames).
+
 ## Story factory
 
 New stories are made on a Mac and served by Render. **No API keys live on the server.**

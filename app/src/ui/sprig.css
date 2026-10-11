@@ -1,0 +1,125 @@
+/* Sprig animations. Poses are CSS variables per state; keyframes add motion on top. */
+.sprig { height: auto; overflow: visible; display: block; flex: none; }
+.sprig * { transform-box: fill-box; }
+.sprig .shadow { fill: rgba(23, 37, 31, 0.14); }
+.sprig .bob, .sprig .breath { transform-origin: 50% 100%; }
+.sprig .leg { transform-origin: 50% 0; }
+.sprig .arm-rot { transform-origin: 50% 0; transform: rotate(var(--a)); }
+.sprig .arm.l .arm-rot { --a: var(--la, 14deg); }
+.sprig .arm.r .arm-rot { --a: var(--ra, -14deg); }
+.sprig .sprout { transform-origin: 50% 100%; }
+.sprig .eyes, .sprig .pupils { transform-origin: 50% 50%; }
+.sprig .tail { transform-origin: 30% 0; }
+.sprig .mouth-open { transform-origin: 50% 30%; transform: scaleY(calc(0.25 + var(--mouth, 0) * 1.1)); }
+.sprig .thought, .sprig .rings, .sprig .zzz, .sprig .map, .sprig .eyes-closed, .sprig .eyes-happy,
+.sprig .mouth-open, .sprig .mouth-o, .sprig .mouth-big { opacity: 0; }
+.sprig .ring { transform-origin: 50% 50%; transform: scale(calc(0.6 + var(--level, 0.3) * 1.2)); transition: transform 0.08s linear; }
+
+/* idle */
+.sprig .breath { animation: sp-breathe 3.2s ease-in-out infinite; }
+.sprig .eyes { animation: sp-blink 5.2s infinite; }
+.sprig .pupils { animation: sp-look 8s ease-in-out infinite; }
+.sprig .sprout { animation: sp-sway 4s ease-in-out infinite; }
+.sprig .tail { animation: sp-flutter 3s ease-in-out infinite; }
+.sprig[data-state="idle"] .arm.r .arm-rot { animation: sp-wave 9s ease-in-out infinite; }
+.sprig[data-pose="map"] .arm.l .arm-rot { --a: -62deg; animation: none; }
+.sprig[data-pose="map"] .arm.r .arm-rot { --a: 62deg; animation: none; }
+.sprig[data-pose="map"] .map { opacity: 1; }
+.sprig[data-pose="map"] .pupils { animation: none; transform: translate(0, 4px); }
+
+/* walking: step speed follows GPS pace through --step */
+.sprig[data-state="walking"] .leg.l { animation: sp-step var(--step) ease-in-out infinite; }
+.sprig[data-state="walking"] .leg.r { animation: sp-step var(--step) ease-in-out infinite reverse; }
+.sprig[data-state="walking"] .bob { animation: sp-bob calc(var(--step) / 2) ease-in-out infinite; }
+.sprig[data-state="walking"] .arm.l .arm-rot { animation: sp-swing var(--step) ease-in-out infinite; }
+.sprig[data-state="walking"] .arm.r .arm-rot { animation: sp-swing var(--step) ease-in-out infinite reverse; }
+.sprig[data-state="walking"] .tail { animation-duration: calc(var(--step) * 1.4); }
+.sprig[data-state="walking"] .pupils { animation: none; transform: translate(3px, 0); }
+
+/* thinking */
+.sprig[data-state="thinking"] { --ra: 122deg; }
+.sprig[data-state="thinking"] .breath { animation: sp-tilt 4s ease-in-out infinite; }
+.sprig[data-state="thinking"] .pupils { animation: none; transform: translate(4px, -4px); }
+.sprig[data-state="thinking"] .brow.r { transform: translateY(-4px); }
+.sprig[data-state="thinking"] .thought { opacity: 1; }
+.sprig .thought .dot { animation: sp-dots 1.2s ease-in-out infinite; }
+.sprig .thought .d2 { animation-delay: 0.2s; }
+.sprig .thought .d3 { animation-delay: 0.4s; }
+.sprig .orbit { transform-origin: 50% 50%; animation: sp-orbit 4s linear infinite; }
+
+/* speaking: --mouth comes from the narration loudness track */
+.sprig[data-state="speaking"] { --la: 40deg; }
+.sprig[data-state="speaking"] .mouth-smile { opacity: 0; }
+.sprig[data-state="speaking"] .mouth-open { opacity: 1; }
+.sprig[data-state="speaking"] .arm.l .arm-rot { animation: sp-gesture 2.4s ease-in-out infinite; }
+
+/* listening: --level comes from the microphone */
+.sprig[data-state="listening"] { --la: 168deg; }
+.sprig[data-state="listening"] .bob { transform: rotate(-7deg); }
+.sprig[data-state="listening"] .rings { opacity: 1; }
+.sprig[data-state="listening"] .pupils { animation: none; transform: translate(-4px, 0); }
+.sprig[data-state="listening"] .mouth-smile { opacity: 0; }
+.sprig[data-state="listening"] .mouth-o { opacity: 1; }
+
+/* celebrating */
+.sprig[data-state="celebrating"] { --la: 150deg; --ra: -150deg; }
+.sprig[data-state="celebrating"] .bob { animation: sp-jump 0.9s cubic-bezier(0.3, 0.7, 0.4, 1) infinite; }
+.sprig[data-state="celebrating"] .arm.l .arm-rot { animation: sp-pump 0.45s ease-in-out infinite alternate; }
+.sprig[data-state="celebrating"] .arm.r .arm-rot { animation: sp-pump 0.45s ease-in-out infinite alternate-reverse; }
+.sprig[data-state="celebrating"] .eyes-open { opacity: 0; }
+.sprig[data-state="celebrating"] .eyes-happy { opacity: 1; }
+.sprig[data-state="celebrating"] .mouth-smile { opacity: 0; }
+.sprig[data-state="celebrating"] .mouth-big { opacity: 1; }
+.sprig[data-state="celebrating"] .sprout { animation: sp-perk 0.45s ease-in-out infinite alternate; }
+
+/* sleepy */
+.sprig[data-state="sleepy"] { --la: 8deg; --ra: -8deg; filter: saturate(0.75); }
+.sprig[data-state="sleepy"] .breath { animation: sp-sleepy 5s ease-in-out infinite; }
+.sprig[data-state="sleepy"] .eyes-open { opacity: 0; }
+.sprig[data-state="sleepy"] .eyes-closed { opacity: 1; }
+.sprig[data-state="sleepy"] .sprout { animation: none; transform: rotate(38deg); }
+.sprig[data-state="sleepy"] .zzz { opacity: 1; }
+.sprig[data-state="sleepy"] .arm.r .arm-rot { animation: none; }
+.sprig .zzz text { animation: sp-z 3s ease-in infinite; transform-origin: 50% 50%; }
+.sprig .zzz text:nth-child(2) { animation-delay: 1s; }
+.sprig .zzz text:nth-child(3) { animation-delay: 2s; }
+
+/* ready: stretch, then tug the straps */
+.sprig[data-state="ready"] .arm.l .arm-rot { animation: sp-stretch-l 3.4s ease-in-out infinite; }
+.sprig[data-state="ready"] .arm.r .arm-rot { animation: sp-stretch-r 3.4s ease-in-out infinite; }
+.sprig[data-state="ready"] .breath { animation: sp-stretch 3.4s ease-in-out infinite; }
+
+/* wave goodbye */
+.sprig[data-state="wave"] .arm.r .arm-rot { animation: sp-wave-loop 1s ease-in-out infinite; }
+
+@keyframes sp-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 1.035); } }
+@keyframes sp-sleepy { 0%, 100% { transform: rotate(4deg) scale(1, 1); } 50% { transform: rotate(4deg) scale(1.02, 1.05); } }
+@keyframes sp-tilt { 0%, 100% { transform: rotate(3deg); } 50% { transform: rotate(5deg) scale(1.01); } }
+@keyframes sp-blink { 0%, 46%, 50%, 100% { transform: scaleY(1); } 48% { transform: scaleY(0.1); } }
+@keyframes sp-look { 0%, 30% { transform: translate(0, 0); } 38%, 55% { transform: translate(-4px, 0); } 62%, 80% { transform: translate(4px, -1px); } 88%, 100% { transform: translate(0, 0); } }
+@keyframes sp-sway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(7deg); } }
+@keyframes sp-flutter { 0%, 100% { transform: rotate(-4deg) skewX(-3deg); } 50% { transform: rotate(8deg) skewX(4deg); } }
+@keyframes sp-wave { 0%, 70%, 100% { transform: rotate(var(--a)); } 74% { transform: rotate(-150deg); } 78% { transform: rotate(-128deg); } 82% { transform: rotate(-156deg); } 86% { transform: rotate(-130deg); } 90% { transform: rotate(-150deg); } }
+@keyframes sp-wave-loop { 0%, 100% { transform: rotate(-150deg); } 50% { transform: rotate(-122deg); } }
+@keyframes sp-step { 0%, 100% { transform: rotate(22deg); } 50% { transform: rotate(-22deg); } }
+@keyframes sp-swing { 0%, 100% { transform: rotate(calc(var(--a) - 26deg)); } 50% { transform: rotate(calc(var(--a) + 26deg)); } }
+@keyframes sp-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes sp-dots { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes sp-orbit { to { transform: rotate(360deg); } }
+@keyframes sp-gesture { 0%, 100% { transform: rotate(40deg); } 50% { transform: rotate(62deg); } }
+@keyframes sp-jump { 0%, 100% { transform: translateY(0) scale(1.03, 0.96); } 45% { transform: translateY(-26px) scale(0.98, 1.03); } }
+@keyframes sp-pump { from { transform: rotate(var(--a)); } to { transform: rotate(calc(var(--a) * 0.82)); } }
+@keyframes sp-perk { from { transform: rotate(-10deg) scale(1); } to { transform: rotate(10deg) scale(1.12); } }
+@keyframes sp-z { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(14px, -30px); opacity: 0; } }
+@keyframes sp-stretch-l { 0%, 10% { transform: rotate(14deg); } 30%, 48% { transform: rotate(176deg); } 62%, 100% { transform: rotate(-30deg); } }
+@keyframes sp-stretch-r { 0%, 10% { transform: rotate(-14deg); } 30%, 48% { transform: rotate(-176deg); } 62%, 100% { transform: rotate(30deg); } }
+@keyframes sp-stretch { 0%, 10%, 62%, 100% { transform: scale(1, 1); } 30%, 48% { transform: scale(0.97, 1.07); } }
+
+/* Battery: nothing animates while the page is hidden. */
+html.is-hidden .sprig, html.is-hidden .sprig * { animation-play-state: paused !important; }
+
+/* Calm motion: poses only. */
+@media (prefers-reduced-motion: reduce) {
+  .sprig, .sprig * { animation: none !important; }
+  .sprig[data-state="celebrating"] .bob { transform: translateY(-10px); }
+}

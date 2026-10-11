@@ -4,7 +4,7 @@ import { newProgress } from '../engine/story.js';
 let dbPromise;
 
 function db() {
-  dbPromise ??= openDB('outward', 3, {
+  dbPromise ??= openDB('outward', 4, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore('meta');
@@ -19,6 +19,10 @@ function db() {
       if (oldVersion < 3) {
         // Story packs downloaded from the story factory (text; audio lives in Cache Storage).
         d.createObjectStore('packs', { keyPath: 'id' });
+      }
+      if (oldVersion < 4) {
+        // Optional journal photos (compressed JPEG blobs, never sent anywhere).
+        d.createObjectStore('photos');
       }
     },
   });
@@ -60,6 +64,20 @@ export async function getPacks() {
 
 export async function savePack(pack) {
   await (await db()).put('packs', pack);
+}
+
+export async function updateSession(id, patch) {
+  const d = await db();
+  const s = await d.get('sessions', id);
+  if (s) await d.put('sessions', { ...s, ...patch });
+}
+
+export async function getPhoto(sessionId) {
+  return (await db()).get('photos', sessionId);
+}
+
+export async function savePhoto(sessionId, blob) {
+  await (await db()).put('photos', blob, sessionId);
 }
 
 export async function getSessions() {

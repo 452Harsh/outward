@@ -36,7 +36,7 @@ export default defineConfig({
         // Includes the llama.cpp runtime (wllama.wasm, ~9 MB), the ONNX runtime for Whisper (~14 MB)
         // and the narration clips, so all of it works offline. Model weights are not here:
         // wllama keeps them in OPFS and Transformers.js in Cache Storage.
-        globPatterns: ['**/*.{js,mjs,css,html,svg,png,ico,webmanifest,wasm,mp3}'],
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,ico,webmanifest,wasm,mp3,woff2}'],
         maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
         // ONNX Runtime also references its WebGPU builds; Whisper uses the CPU build only.
         globIgnores: ['**/*.asyncify*', '**/*.jsep*', '**/*.jspi*'],
