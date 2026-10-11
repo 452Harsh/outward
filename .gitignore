@@ -34,3 +34,6 @@ __pycache__/
 
 # Model conversion scratch (large files)
 training/07_export/work/
+
+# Demo video build output (large)
+demo/out/

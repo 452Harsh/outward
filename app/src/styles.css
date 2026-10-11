@@ -173,7 +173,7 @@ html.is-hidden .flame .fl { animation-play-state: paused; }
 .teaser { background: var(--surface); border-radius: 20px; padding: 12px 14px; border: 2px solid var(--line); display: grid; gap: 2px; }
 .teaser .k { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sunrise); }
 .teaser .v { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.15; }
-.today { display: flex; gap: 10px; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--muted); }
+.today { text-align: center; font-weight: 700; font-size: 15px; color: var(--muted); }
 .today b { color: var(--ink); font-family: var(--font-display); font-size: 18px; }
 
 /* ---------- Tab bar ---------- */
