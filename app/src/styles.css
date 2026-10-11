@@ -571,3 +571,12 @@ progress {
   color: var(--muted);
   font-size: 13px;
 }
+
+.note.update {
+  border: 2px solid var(--accent);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}

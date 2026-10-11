@@ -1,4 +1,4 @@
-import { generate, getInstalled } from '../ai/llm.js';
+import { generate, getInstalled, installedPromptStyle } from '../ai/llm.js';
 import { buildMessages, acceptContinuation } from './prompt.js';
 import { templateContinuation } from './story.js';
 
@@ -19,7 +19,8 @@ export async function continueStory({ chapter, discovery }) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const out = await generate(buildMessages(chapter, discovery), { signal: controller.signal });
+    const style = (await installedPromptStyle()) ?? 'fewshot';
+    const out = await generate(buildMessages(chapter, discovery, style), { signal: controller.signal });
     const { text, tokensPerSec, tokens, ms, gpu } = out;
     const verdict = acceptContinuation(text, discovery, chapter);
     const stats = { tokensPerSec, tokens, ms, gpu };

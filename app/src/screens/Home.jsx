@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'preact/hooks';
 import { getSessions, resetStory } from '../db/index.js';
+import { updateAvailable } from '../ai/llm.js';
+import { formatBytes } from '../lib/device.js';
 import { streakDays, totals } from '../engine/activity.js';
 import { TIME_BUDGETS, currentChapter, newProgress } from '../engine/story.js';
 
 export default function Home({ story, progress, prefs, onPrefs, onStart, onProgress, onNavigate }) {
   const chapter = currentChapter(story, progress);
   const [stats, setStats] = useState(null);
+  const [update, setUpdate] = useState(null);
+  useEffect(() => {
+    updateAvailable().then(setUpdate, () => setUpdate(null));
+  }, []);
   useEffect(() => {
     getSessions().then((all) => setStats({ streak: streakDays(all), ...totals(all) }));
   }, [progress]);
@@ -33,6 +39,12 @@ export default function Home({ story, progress, prefs, onPrefs, onStart, onProgr
           />
         ))}
       </ol>
+
+      {update && (
+        <button class="note update" onClick={() => onNavigate('settings')}>
+          A better storyteller is ready ({formatBytes(update.bytes)}, Wi-Fi recommended). Tap to update.
+        </button>
+      )}
 
       {stats?.chapters > 0 && (
         <section class="strip" aria-label="Your time outside">

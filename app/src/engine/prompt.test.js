@@ -19,6 +19,16 @@ describe('buildMessages', () => {
   });
 });
 
+describe('buildMessages (task style, distilled student)', () => {
+  it('uses the shared task prompt with the mission and no example', () => {
+    const msgs = buildMessages(ch1, '  a   tap ', 'task');
+    expect(msgs).toHaveLength(2);
+    expect(msgs[1].content).toContain(ch1.mission.prompt);
+    expect(msgs[1].content).toContain('"a tap"'); // as typed, like the training data
+    expect(msgs.some((m) => m.role === 'assistant')).toBe(false);
+  });
+});
+
 describe('tidyOutput', () => {
   it('removes markdown and cuts an unfinished sentence', () => {
     expect(tidyOutput('**You** see it. The page glows. And then the')).toBe('You see it. The page glows.');

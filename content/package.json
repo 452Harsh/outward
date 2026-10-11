@@ -9,6 +9,7 @@
     "./models": "./models.js",
     "./models.json": "./models.json",
     "./stories/*": "./stories/*",
-    "./audio/*": "./audio/*"
+    "./audio/*": "./audio/*",
+    "./prompts/*": "./prompts/*"
   }
 }

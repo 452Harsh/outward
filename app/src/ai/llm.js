@@ -1,6 +1,6 @@
 // On-device storyteller runtime: llama.cpp (wllama) with WebGPU when available,
 // multi-threaded CPU otherwise. One model is installed per phone.
-import { getModel, modelUrls, registry } from '@outward/content/models';
+import { getModel, getModelOrDefault, modelUrls } from '@outward/content/models';
 import { getMeta, setMeta } from '../db/index.js';
 import { detectWebGPU } from '../lib/device.js';
 
@@ -26,7 +26,24 @@ async function getWllama() {
 
 /** The model the user picked in settings (not necessarily downloaded yet). */
 export async function getChosenModel() {
-  return getModel(await getMeta('modelChoice', registry.default));
+  return getModelOrDefault(await getMeta('modelChoice', null));
+}
+
+/** Prompt style for the model that is actually installed (old phones may still have a stock model). */
+export async function installedPromptStyle() {
+  const rec = await getInstalled();
+  if (!rec) return null;
+  try {
+    return getModel(rec.id).promptStyle;
+  } catch {
+    return 'fewshot'; // a stock model that has since been removed from the registry
+  }
+}
+
+/** True when a newer storyteller than the installed one is available. */
+export async function updateAvailable() {
+  const [rec, chosen] = await Promise.all([getInstalled(), getChosenModel()]);
+  return Boolean(rec) && (rec.id !== chosen.id || rec.version !== chosen.version) ? chosen : null;
 }
 
 export async function setChosenModel(id) {
@@ -99,7 +116,7 @@ export async function loadModel({ gpu } = {}) {
   loading = (async () => {
     if (loaded) await unload();
     const w = await getWllama();
-    const m = getModel(rec.id);
+    const m = getModelOrDefault(rec.id);
     const t0 = performance.now();
     await w.loadModelFromUrl(rec.url, { n_ctx: m.nCtx, n_gpu_layers: useGpu ? 999 : 0 });
     loaded = {

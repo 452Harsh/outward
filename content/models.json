@@ -1,24 +1,25 @@
 {
   "_comment": "On-device storyteller models. `version` is part of every URL, so a phone only re-downloads when the version changes. Shared by the app (download + load) and the server (syncs Render-served files to the persistent disk).",
-  "default": "gemma3-270m",
+  "default": "outward-gemma3-270m",
   "models": {
-    "gemma3-270m": {
+    "outward-gemma3-270m": {
       "label": "Standard",
-      "description": "Gemma 3 270M. Small and fast.",
-      "version": "stock-qat-q4_0-7dba9fa",
-      "file": "gemma-3-270m-it-qat-Q4_0.gguf",
-      "bytes": 241410624,
+      "description": "Outward storyteller: Gemma 3 270M distilled from a fine-tuned Qwen3.5-4B. Small and fast.",
+      "version": "distilled-v1-133f250",
+      "file": "outward-gemma3-270m-Q4_0.gguf",
+      "bytes": 241411264,
       "hf": {
-        "repo": "ggml-org/gemma-3-270m-it-qat-GGUF",
-        "revision": "7dba9faa7cdb58c7dc44b238c7dbb00e391fbf65"
+        "repo": "Harsh452/outward-gemma3-270m",
+        "revision": "133f250a4df5b2ddeefb5305fec5d30e108d3e4f"
       },
       "serveFromRender": true,
       "requiresWebGPU": false,
-      "nCtx": 1024
+      "nCtx": 1024,
+      "promptStyle": "task"
     },
     "gemma3-1b": {
-      "label": "Better stories",
-      "description": "Gemma 3 1B. Richer stories, bigger download, needs WebGPU.",
+      "label": "Larger stock model",
+      "description": "Stock Gemma 3 1B (not fine-tuned yet). Bigger download, needs WebGPU.",
       "version": "stock-qat-q4_0-c2531de",
       "file": "gemma-3-1b-it-qat-Q4_0.gguf",
       "bytes": 720425600,
@@ -28,7 +29,8 @@
       },
       "serveFromRender": false,
       "requiresWebGPU": true,
-      "nCtx": 1024
+      "nCtx": 1024,
+      "promptStyle": "fewshot"
     }
   },
   "speech": {

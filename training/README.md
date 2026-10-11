@@ -14,10 +14,10 @@ training/.venv/bin/python -m pytest -q training/tests      # free: safety parity
 | 1. Seed dataset + review/filter | `01_seed/` | ✅ 648 seeds (35 gold + base-Qwen expansion, rubric-filtered) |
 | 2. Held-out eval (50 prompts) + dev set (85) + rubric + spot-check sheet | `02_eval/` | ✅ |
 | 3. Teacher LoRA on Qwen3.5-4B, base vs fine-tuned | `03_teacher/` | ✅ see [RESULTS.md](RESULTS.md) |
-| 4. Distillation sampling (3–5k) + filtering | `04_distill/` | phase 6 |
-| 5. Gemma 3 270M / 1B student (Colab, Unsloth/TRL) | `05_student/` | phase 6 |
-| 6. Final eval: base Gemma vs student vs teacher | `06_final_eval/` | phase 6 |
-| 7. Export: GGUF Q4_0 → Render disk + Hugging Face | `07_export/` | phase 6 |
+| 4. Distillation sampling + filtering | `04_distill/` | ✅ 3,186 examples |
+| 5. Gemma 3 270M student (Kaggle/Colab, TRL) | `05_student/` | ✅ val loss 1.81 → 1.50 |
+| 6. Final eval: base Gemma vs student vs teacher | `06_final_eval/` | ✅ 2.55/3.66 → 4.75 (teacher 4.79) |
+| 7. Export: GGUF Q4_0 → Hugging Face (+ Render disk via server sync) | `07_export/` | ✅ Harsh452/outward-gemma3-270m |
 
 ## Shared pieces
 
@@ -40,3 +40,15 @@ The 50 prompts cover 10 per chapter. 12 are adversarial (e.g. "a river in flood 
 
 - `04_distill/distill.py prompts|sample|filter`: 2,500 prompts (eval and dev excluded). The teacher writes 3 stories per prompt, and up to 2 that score 5/5 are kept: **3,186 examples, 43% risky finds**. Teacher sampling cost $0.98.
 - `05_student/train_gemma_student.ipynb`: runs on **Kaggle** (Save & Run All, in the background) or Colab. Full fine-tune of Gemma 3 270M (LoRA for 1B) with TRL, loss on the story tokens only, best checkpoint by validation loss, uploaded to a private Hugging Face repo.
+
+### Export (on a Mac)
+
+```bash
+brew install llama.cpp
+git clone --depth 1 https://github.com/ggml-org/llama.cpp training/07_export/work/llama.cpp
+training/.venv/bin/pip install gguf sentencepiece torch --index-url https://download.pytorch.org/whl/cpu
+# download the student (snapshot_download), add stock tokenizer.model, then:
+training/.venv/bin/python training/07_export/work/llama.cpp/convert_hf_to_gguf.py student-hf --outtype f16 --outfile student-f16.gguf
+llama-quantize student-f16.gguf outward-gemma3-270m-Q4_0.gguf Q4_0
+training/.venv/bin/python training/06_final_eval/run_gguf.py --label student --gguf outward-gemma3-270m-Q4_0.gguf
+```

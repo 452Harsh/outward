@@ -80,7 +80,7 @@ describe('model bandwidth guardrail', () => {
     const over = buildServer({ appDist, modelsDir: path.join(root, 'models2'), budgetGB: 0.000001, logger: false });
     await over.ready();
     over.meter.add(10_000);
-    const m = getModel('gemma3-270m');
+    const m = getModel('outward-gemma3-270m');
     const res = await over.inject(`/models/${renderPath(m)}`);
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toBe(hfUrl(m));
@@ -93,7 +93,7 @@ describe('model bandwidth guardrail', () => {
 describe('model sync', () => {
   it('downloads Render-served models, verifies size, prunes old versions', async () => {
     const dir = path.join(root, 'sync');
-    const m = getModel('gemma3-270m');
+    const m = getModel('outward-gemma3-270m');
     mkdirSync(path.join(dir, m.id, 'old-version'), { recursive: true });
     const fetchImpl = async () => new Response(new Uint8Array(m.bytes));
     await syncModels(dir, { log: {}, fetchImpl });

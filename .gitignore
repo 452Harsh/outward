@@ -31,3 +31,6 @@ training/**/checkpoints/
 .venv/
 __pycache__/
 *.pyc
+
+# Model conversion scratch (large files)
+training/07_export/work/

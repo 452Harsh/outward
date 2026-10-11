@@ -5,7 +5,12 @@ export { registry };
 export function getModel(id = registry.default) {
   const m = registry.models[id];
   if (!m) throw new Error(`Unknown model: ${id}`);
-  return { id, ...m };
+  return { id, promptStyle: 'fewshot', ...m };
+}
+
+/** Like getModel, but falls back to the default for ids that were removed from the registry. */
+export function getModelOrDefault(id) {
+  return registry.models[id] ? getModel(id) : getModel();
 }
 
 export function hfUrl(m) {

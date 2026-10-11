@@ -1,6 +1,7 @@
 // Prompt building and output checks for the on-device storyteller.
 // Kept short on purpose: Gemma 3 270M follows short prompts with one example best.
 import { checkText, countWords, normalize } from '@outward/content/safety';
+import task from '@outward/content/prompts/task.json';
 import { cleanDiscovery } from './story.js';
 
 export const MIN_WORDS = 25;
@@ -25,7 +26,22 @@ function userTurn(context, discovery) {
   return `Story so far: ${context}\nThe Wayfinder found: "${discovery}"\nWhat happens to the atlas?`;
 }
 
-export function buildMessages(chapter, discovery) {
+/**
+ * @param {'task'|'fewshot'} style 'task' for the distilled student (the format it was
+ *   trained on); 'fewshot' for stock models, which need a worked example.
+ */
+export function buildMessages(chapter, discovery, style = 'fewshot') {
+  if (style === 'task') {
+    const user = task.user
+      .replace('{context}', chapter.storyContext)
+      .replace('{mission}', chapter.mission.prompt)
+      // As in training (training/common/story.py): the user's words, just trimmed.
+      .replace('{discovery}', String(discovery ?? '').replace(/\s+/g, ' ').trim().slice(0, 200));
+    return [
+      { role: 'system', content: task.system },
+      { role: 'user', content: user },
+    ];
+  }
   return [
     { role: 'system', content: SYSTEM },
     { role: 'user', content: EXAMPLE_USER },
@@ -105,7 +121,7 @@ export function acceptContinuation(raw, discovery, chapter) {
   }
   if (/\b(?:as an ai|language model|i cannot|i can't help|the user|the listener)\b/i.test(text)) return { ok: false, reason: 'meta', text };
   if (sharedGrams(text, EXAMPLE_ASSISTANT) > MAX_SHARED) return { ok: false, reason: 'copies_example', text };
-  const prompt = `${SYSTEM} ${chapter?.storyContext ?? ''} The Wayfinder found What happens to the atlas`;
+  const prompt = `${SYSTEM} ${task.system} ${chapter?.storyContext ?? ''} ${chapter?.mission?.prompt ?? ''} The Wayfinder found What happens to the atlas`;
   if (sharedGrams(text, prompt) > MAX_SHARED) return { ok: false, reason: 'echoes_prompt', text };
   if (hasRepeatedSentence(text)) return { ok: false, reason: 'repeats', text };
   return { ok: true, text };

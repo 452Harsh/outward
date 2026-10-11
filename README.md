@@ -6,15 +6,15 @@ Outward is an installable web app (PWA) that turns a walk into an adventure. You
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
 
-> **Status:** Phase 4 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode, along with walking-gated missions, a drawn walk path and screen-time stats. The fine-tuning pipeline comes next (see [Roadmap](#roadmap)).
+> **Status:** Phase 6 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode, along with walking-gated missions, a drawn walk path and screen-time stats. The phone now runs a Gemma 3 270M that was distilled from a Tinker fine-tuned Qwen3.5-4B (rubric 2.55 → 4.75; see [training/RESULTS.md](training/RESULTS.md)). Story factory and write-up come next (see [Roadmap](#roadmap)).
 
 ## On-device AI
 
 | | |
 |---|---|
 | Runtime | [wllama](https://github.com/ngxson/wllama) (llama.cpp → WebAssembly). Uses WebGPU when available, multi-threaded CPU otherwise |
-| Default model | Gemma 3 270M, QAT Q4_0 GGUF, **241.4 MB** |
-| Optional upgrade | Gemma 3 1B, QAT Q4_0 GGUF, **720.4 MB**, always from Hugging Face, needs WebGPU (Settings → Storyteller) |
+| Default model | **Outward storyteller**: Gemma 3 270M distilled from a fine-tuned Qwen3.5-4B teacher, Q4_0 GGUF, **241.4 MB** ([Hugging Face](https://huggingface.co/Harsh452/outward-gemma3-270m)) |
+| Optional | Stock Gemma 3 1B, QAT Q4_0, 720.4 MB, from Hugging Face, needs WebGPU (not fine-tuned yet) |
 | Model source | Hugging Face during development. Demo build (`VITE_MODEL_SOURCE=render`): Render first, Hugging Face as fallback |
 | Caching | OPFS, keyed by a versioned URL. A phone re-downloads only when `content/models.json` changes. One model per phone |
 | Fallback | If there's no model, generation fails, takes over 30 s, or fails the safety/quality checks, a pre-written continuation is used |
@@ -124,7 +124,7 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 
 ## Reproduce the training pipeline
 
-*Coming in phases 5–6.* Scripts will live in `training/`: seed dataset → eval set and rubric → Tinker LoRA on Qwen3.5-4B (teacher) → distillation → Gemma 3 270M (and 1B) student → GGUF export.
+See [training/README.md](training/README.md): seed dataset → eval set and rubric → Tinker LoRA on Qwen3.5-4B (teacher) → distillation → Gemma 3 270M student (Kaggle) → GGUF export → final eval. Total Tinker spend: $2.55.
 
 ## Roadmap
 
@@ -132,8 +132,8 @@ Missions never involve trespassing, roads or traffic, entering water, climbing, 
 2. ✅ On-device Gemma 3 270M (wllama, WebGPU/CPU) writing continuations, plus a field-test lab
 3. ✅ Voice in (Whisper, on-device) and out (ElevenLabs narration, 16 clips, 5.1 min, + device voice)
 4. ✅ GPS walk path, walking-gated missions, screen-time tracking, streaks
-5. Tinker teacher fine-tune + eval
-6. Distillation → Gemma student → swap into the app
+5. ✅ Tinker teacher fine-tune + eval
+6. ✅ Distillation → Gemma student → swapped into the app
 7. Story factory on Render + Sentry Agent Tracing
 8. Write-up and demo
 

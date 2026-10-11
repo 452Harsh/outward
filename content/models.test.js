@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getModel, hfUrl, modelUrls, registry, renderPath } from './models.js';
+import { getModel, getModelOrDefault, hfUrl, modelUrls, registry, renderPath } from './models.js';
 
 describe('model registry', () => {
   it.each(Object.keys(registry.models))('%s is pinned and complete', (id) => {
@@ -21,9 +21,18 @@ describe('model registry', () => {
   });
 
   it('orders sources by build mode', () => {
-    const m = getModel('gemma3-270m');
+    const m = getModel('outward-gemma3-270m');
     expect(modelUrls(m, 'render', 'https://x')).toEqual([`https://x/models/${renderPath(m)}`, hfUrl(m)]);
     expect(modelUrls(m, 'hf')).toEqual([hfUrl(m)]);
     expect(modelUrls(getModel('gemma3-1b'), 'render')).toEqual([hfUrl(getModel('gemma3-1b'))]);
+  });
+});
+
+describe('model upgrades', () => {
+  it('ships the distilled student as default, with the task prompt', () => {
+    expect(getModel()).toMatchObject({ id: 'outward-gemma3-270m', promptStyle: 'task' });
+  });
+  it('falls back to the default for removed model ids (e.g. old stock 270M)', () => {
+    expect(getModelOrDefault('gemma3-270m').id).toBe(registry.default);
   });
 });

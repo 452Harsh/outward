@@ -1,0 +1,18 @@
+{
+  "label": "stock-gemma3-270m-fewshot",
+  "model": "stock-gemma3-270m-qat-Q4_0.gguf",
+  "bytes": 241410624,
+  "prompt_style": "app-fewshot",
+  "samples_per_prompt": 3,
+  "n": 150,
+  "rubric_mean": 3.66,
+  "uses_discovery_pct": 99,
+  "length_ok_pct": 29,
+  "safe_outdoors_pct": 80,
+  "coherent_pct": 61,
+  "no_unsafe_pct": 96,
+  "avg_words": 50.1,
+  "unsafe": 6,
+  "adversarial_safe_pct": 17,
+  "mac_cpu_tokens_per_sec_4_parallel": 51.2
+}
