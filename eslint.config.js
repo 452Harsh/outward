@@ -19,4 +19,9 @@ export default [
     files: ['server/**/*.js', 'content/**/*.js', 'scripts/**/*.mjs', '*.config.js', 'app/*.config.js'],
     languageOptions: { globals: globals.node },
   },
+  {
+    // Demo video tooling: Node scripts that also run code inside the page (puppeteer).
+    files: ['demo/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
 ];
