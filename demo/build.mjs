@@ -33,11 +33,10 @@ const appSegs = board.segments.filter((s) => s.kind === 'app');
 const plan = [];
 for (const s of board.segments) {
   if (s.kind === 'card') plan.push({ ...s, type: 'card' });
-  else {
-    const n = appSegs.indexOf(s) + 1;
-    plan.push({ ...s, type: 'app', clip: s.id, n, of: appSegs.length });
-    if (s.id === 'mission') plan.push({ id: 'walk', type: 'app', clip: 'walk', n, of: appSegs.length, speed: 8, title: 'Then you walk', subtitle: 'Phone in the pocket. GPS counts the metres.', tags: ['250 m for a 10-minute walk'], silent: true });
-  }
+  else if (s.kind === 'walk') {
+    // The walk belongs to the mission beat: same step number, sped up, voiced over a wind bed.
+    plan.push({ ...s, type: 'app', clip: 'walk', n: appSegs.findIndex((x) => x.id === 'mission') + 1, of: appSegs.length, wind: true });
+  } else plan.push({ ...s, type: 'app', clip: s.id, n: appSegs.indexOf(s) + 1, of: appSegs.length });
 }
 
 const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--hide-scrollbars', '--allow-file-access-from-files'] });
@@ -101,15 +100,17 @@ for (const seg of plan) {
     await page.screenshot({ path: bg });
     const clip = path.join(OUT, 'clips', `${seg.clip}.mp4`);
     const clipSec = dur(clip) / (seg.speed ?? 1);
-    seconds = seg.silent ? Math.min(clipSec, 9) : Math.min(Math.max(clipSec, v.voSec + 0.9), v.voSec + 7.5);
+    // Each beat ends shortly after its voice-over; Home runs on while George narrates.
+    const tail = seg.appAudio ? 7.5 : 1.6;
+    seconds = seg.wind ? Math.min(clipSec, Math.max(9, v.voSec + 0.9)) : Math.min(Math.max(clipSec, v.voSec + 0.9), v.voSec + tail);
     const speed = seg.speed ? `setpts=PTS/${seg.speed},` : '';
     const video = `[1:v]${speed}scale=${SCREEN.w}:${SCREEN.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[c];[0:v][c]overlay=${SCREEN.x}:${SCREEN.y}[b];[b][2:v]overlay=0:0,format=yuv420p[v]`;
     const inputs = ['-loop', '1', '-i', bg, '-i', clip, '-loop', '1', '-i', framePng];
     let audio;
-    if (seg.silent) {
-      // A soft outdoor wind bed under the sped-up walk.
-      inputs.push('-f', 'lavfi', '-i', `anoisesrc=color=brown:amplitude=0.6:sample_rate=48000:duration=${seconds}`);
-      audio = `[3:a]lowpass=f=500,volume=0.18,afade=t=in:d=0.6,afade=t=out:st=${seconds - 0.8}:d=0.8,aformat=channel_layouts=stereo[a]`;
+    if (seg.wind) {
+      // Presenter voice over a soft outdoor wind bed under the sped-up walk.
+      inputs.push('-i', v.voFile, '-f', 'lavfi', '-i', `anoisesrc=color=brown:amplitude=0.6:sample_rate=48000:duration=${seconds}`);
+      audio = `[3:a]adelay=${VO_DELAY * 1000}|${VO_DELAY * 1000},apad,aformat=channel_layouts=stereo[vo];[4:a]lowpass=f=500,volume=0.12,afade=t=in:d=0.6,afade=t=out:st=${seconds - 0.8}:d=0.8,aformat=channel_layouts=stereo[w];[vo][w]amix=inputs=2:duration=longest:normalize=0[a]`;
     } else {
       inputs.push('-i', v.voFile);
       audio = `[3:a]adelay=${VO_DELAY * 1000}|${VO_DELAY * 1000},apad,aformat=channel_layouts=stereo[vo]`;
@@ -126,7 +127,7 @@ for (const seg of plan) {
     ff([...inputs, '-filter_complex', `${video};${audio}`, '-map', '[v]', '-map', '[a]', '-t', String(seconds), '-r', '30', '-c:v', 'libx264', '-crf', '17', '-preset', 'medium', '-c:a', 'aac', '-ar', '48000', '-ac', '2', '-b:a', '192k', out]);
   }
   // Subtitles: split the voice-over into sentences over its spoken time.
-  if (!seg.silent && v) {
+  if (v) {
     const sentences = v ? board.segments.find((s) => s.id === seg.id).vo.match(/[^.!?:]+[.!?:]+(\s|$)/g) ?? [] : [];
     const total = sentences.reduce((n, s) => n + s.length, 0);
     let t = clock + VO_DELAY;

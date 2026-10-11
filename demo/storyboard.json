@@ -1,28 +1,100 @@
 {
   "_comment": "Voice-over and layout for the hackathon demo video. Built by demo/build.mjs.",
-  "voice": { "presenter": "iP95p4xoKVk53GoZ742B", "presenterName": "Chris (ElevenLabs premade)", "model": "eleven_multilingual_v2" },
+  "voice": {
+    "presenter": "iP95p4xoKVk53GoZ742B",
+    "presenterName": "Chris (ElevenLabs premade)",
+    "model": "eleven_multilingual_v2"
+  },
   "segments": [
-    { "id": "intro", "kind": "card", "title": "Outward", "subtitle": "Your story happens outside.",
-      "vo": "This is Outward: a story you can only play by going outside. You put your phone in your pocket and walk. When you find something real, a small AI running entirely on your phone weaves it into the story. No signal needed, no cloud, and almost no screen time." },
-    { "id": "home", "kind": "app", "title": "Meet Sprig", "subtitle": "Your walking companion",
-      "tags": ["Story narration: ElevenLabs", "Cached for offline"],
+    {
+      "id": "intro",
+      "kind": "card",
+      "title": "Outward",
+      "subtitle": "Your story happens outside.",
+      "vo": "This is Outward: a story you can only play by going outside. You put your phone in your pocket and walk. When you find something real, a small AI running entirely on your phone weaves it into the story. No signal needed, no cloud, and almost no screen time."
+    },
+    {
+      "id": "home",
+      "kind": "app",
+      "title": "Meet Sprig",
+      "subtitle": "Your walking companion",
+      "tags": [
+        "Story narration: ElevenLabs",
+        "Cached for offline"
+      ],
       "vo": "Meet Sprig, your walking companion. Tap Start Adventure, and the Archivist reads the chapter. That voice was made with ElevenLabs and saved on the phone, so it plays with no signal.",
-      "appAudio": "s2ch3-intro" },
-    { "id": "mission", "kind": "app", "title": "A real-world mission", "subtitle": "Safe by design, then pocket the phone",
-      "tags": ["GPS distance gate", "Screen-off friendly"],
-      "vo": "Every chapter has a safe mission. Pick your time, pocket the phone, and walk. GPS counts the distance, and the I found it button only opens once you have really walked." },
-    { "id": "story", "kind": "app", "title": "AI on the phone", "subtitle": "Airplane mode on", "airplane": true,
-      "tags": ["Whisper speech-to-text", "Gemma 3 270M, 241 MB", "Fully offline"],
-      "vo": "This part runs in airplane mode. You say or type what you found. Then Sprig thinks, and my distilled Gemma model writes the next part of the story right on the phone, in about two seconds, using your own words." },
-    { "id": "complete", "kind": "app", "title": "Proud of the walk", "subtitle": "Minutes outside, not on screen",
-      "tags": ["XP and badges", "Discovery journal"],
-      "vo": "Back home, the trophy is the number that matters: minutes outside against minutes on screen. You earn XP, badges, and a journal card for everything you found." },
-    { "id": "quest", "kind": "app", "title": "A story that grows", "subtitle": "Quest map and story packs",
-      "tags": ["Story factory on Render", "Human-reviewed packs"],
-      "vo": "Chapters form a trail on the quest map, and new story packs come from a story factory on Render, reviewed by a person before they ship." },
-    { "id": "results", "kind": "card", "title": "Open models, made smaller", "subtitle": "Tinker teacher, distilled Gemma student",
-      "vo": "Every model here is open. I fine-tuned Qwen 3.5, four billion parameters, on Tinker, then distilled it into Gemma 3 with 270 million. On fifty held-out prompts, stock Gemma scored 2.6 out of 5. My distilled model scored 4.75, almost matching its teacher, with fewer unsafe outputs. All the Tinker training cost two dollars fifty-six." },
-    { "id": "outro", "kind": "card", "title": "Outward", "subtitle": "Your story happens outside.",
-      "vo": "Outward. Your story happens outside." }
+      "appAudio": "s2ch3-intro"
+    },
+    {
+      "id": "mission",
+      "kind": "app",
+      "title": "A real-world mission",
+      "subtitle": "Safe by design, then pocket the phone",
+      "tags": [
+        "GPS distance gate",
+        "Screen-off friendly"
+      ],
+      "vo": "Every chapter has a safe mission. Pick your time, pocket the phone, and walk. GPS counts the distance, and the I found it button only opens once you have really walked."
+    },
+    {
+      "id": "walk",
+      "kind": "walk",
+      "title": "Then you walk",
+      "subtitle": "Phone in the pocket. GPS counts the metres.",
+      "tags": [
+        "250 m for a 10-minute walk"
+      ],
+      "speed": 8,
+      "vo": "Then the phone goes in your pocket. GPS counts the metres while the screen stays off, and Sprig keeps track of every step."
+    },
+    {
+      "id": "story",
+      "kind": "app",
+      "title": "AI on the phone",
+      "subtitle": "Airplane mode on",
+      "airplane": true,
+      "tags": [
+        "Whisper speech-to-text",
+        "Gemma 3 270M, 241 MB",
+        "Fully offline"
+      ],
+      "vo": "This part runs in airplane mode. You say or type what you found. Then Sprig thinks, and my distilled Gemma model writes the next part of the story right on the phone, in about two seconds, using your own words."
+    },
+    {
+      "id": "complete",
+      "kind": "app",
+      "title": "Proud of the walk",
+      "subtitle": "Minutes outside, not on screen",
+      "tags": [
+        "XP and badges",
+        "Discovery journal"
+      ],
+      "vo": "Back home, the trophy is the number that matters: minutes outside against minutes on screen. You earn XP, level up, collect badges, and get a journal card for everything you found."
+    },
+    {
+      "id": "quest",
+      "kind": "app",
+      "title": "A story that grows",
+      "subtitle": "Quest map and story packs",
+      "tags": [
+        "Story factory on Render",
+        "Human-reviewed packs"
+      ],
+      "vo": "Chapters form a trail on the quest map, every find becomes a card in your journal, and new story packs come from a story factory on Render, reviewed by a person before they ship."
+    },
+    {
+      "id": "results",
+      "kind": "card",
+      "title": "Open models, made smaller",
+      "subtitle": "Tinker teacher, distilled Gemma student",
+      "vo": "Every model here is open. I fine-tuned Qwen 3.5, four billion parameters, on Tinker, then distilled it into Gemma 3 with 270 million. On fifty held-out prompts, stock Gemma scored 2.6 out of 5. My distilled model scored 4.75, almost matching its teacher, with fewer unsafe outputs. All the Tinker training cost two dollars fifty-six."
+    },
+    {
+      "id": "outro",
+      "kind": "card",
+      "title": "Outward",
+      "subtitle": "Your story happens outside.",
+      "vo": "Outward. Put the phone away, and go find your story. Your story happens outside."
+    }
   ]
 }
