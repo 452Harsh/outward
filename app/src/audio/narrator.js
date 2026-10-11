@@ -26,27 +26,30 @@ function setNowPlaying(title) {
   navigator.mediaSession.metadata = new MediaMetadata({
     title,
     artist: 'The Archivist',
-    album: 'Outward: The Quiet Atlas',
+    album: 'Outward',
     artwork: [{ src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' }],
   });
 }
 
-export const hasClip = (id) => Boolean(manifest.clips[id]);
+/** Narration for the bundled story; factory packs carry their own { base, clips }. */
+export const bundledAudio = { base: '/audio/', clips: manifest.clips };
+
+export const hasClip = (id, audio = bundledAudio) => Boolean(audio.clips?.[id]);
 
 /**
  * Play a fixed narration clip, or read `fallbackText` with the device voice
  * if the clip hasn't been generated yet.
  * @returns {Promise<'clip'|'voice'>}
  */
-export async function playClip(id, fallbackText, title = 'Outward') {
+export async function playClip(id, fallbackText, title = 'Outward', audio = bundledAudio) {
   stopNarration();
-  const clip = manifest.clips[id];
+  const clip = audio?.clips?.[id];
   if (!clip) {
     speak(fallbackText);
     return 'voice';
   }
   const a = player();
-  a.src = `/audio/${clip.file}`;
+  a.src = `${audio.base}${clip.file}`;
   setNowPlaying(title);
   try {
     await a.play();

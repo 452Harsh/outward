@@ -44,6 +44,15 @@ export default defineConfig({
         // Model weights are cached by WebLLM itself (phase 2); the API is network-only.
         navigateFallbackDenylist: [/^\/api\//, /^\/models\//],
         cleanupOutdatedCaches: true,
+        // Story-pack narration is put into this cache when a pack is downloaded,
+        // so it plays offline. Range support lets the audio element seek.
+        runtimeCaching: [
+          {
+            urlPattern: /\/packs\/[a-z0-9-]+\/audio\/[a-z0-9-]+\.mp3$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'outward-packs', rangeRequests: true },
+          },
+        ],
       },
     }),
   ],

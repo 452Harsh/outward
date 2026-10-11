@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { getActiveChapter, getMeta, getProgress, setMeta } from './db/index.js';
-import { getStory } from './engine/story.js';
+import { bundledStory, installedStories } from './engine/stories.js';
 import { resumeIfActive } from './lab/fieldtest.js';
 import SafetyNote from './screens/SafetyNote.jsx';
 import Setup from './screens/Setup.jsx';
@@ -11,30 +11,44 @@ import Settings from './screens/Settings.jsx';
 import Diagnostics from './screens/Diagnostics.jsx';
 import FieldTest from './screens/FieldTest.jsx';
 
-const story = getStory();
-const chapterById = (id) => story.chapters.find((c) => c.id === id);
-
 export function App() {
   const [route, setRoute] = useState({ name: 'loading' });
+  const [stories, setStories] = useState([bundledStory()]);
+  const [story, setStory] = useState(bundledStory());
   const [progress, setProgress] = useState(null);
   const [prefs, setPrefs] = useState({ timeBudget: 30, narration: true });
 
+  const selectStory = async (id, list = stories) => {
+    const s = list.find((x) => x.id === id) ?? list[0];
+    setStory(s);
+    setProgress(await getProgress(s.id));
+    return s;
+  };
+  const refreshStories = async (selectId) => {
+    const list = await installedStories();
+    setStories(list);
+    if (selectId) await selectStory(selectId, list);
+    return list;
+  };
+
   useEffect(() => {
     (async () => {
-      const [safetyAccepted, setupDone, savedPrefs, p, active] = await Promise.all([
+      const [safetyAccepted, setupDone, savedPrefs, active, list] = await Promise.all([
         getMeta('safetyAccepted', false),
         getMeta('setupDone', false),
         getMeta('prefs', null),
-        getProgress(story.id),
         getActiveChapter(),
+        installedStories(),
       ]);
       if (savedPrefs) setPrefs(savedPrefs);
-      setProgress(p);
+      setStories(list);
+      const s = await selectStory(active?.storyId ?? savedPrefs?.storyId ?? list[0].id, list);
+      const p = await getProgress(s.id);
       resumeIfActive();
       if (!safetyAccepted) return setRoute({ name: 'safety' });
       if (!setupDone) return setRoute({ name: 'setup' });
       // A chapter was in progress (e.g. Chrome killed the page in a pocket): pick it up.
-      const ch = active && chapterById(active.chapterId);
+      const ch = active && s.chapters.find((c) => c.id === active.chapterId);
       if (ch && !p.completed.includes(ch.id)) return setRoute({ name: 'chapter', chapter: ch, resume: active });
       setRoute({ name: 'home' });
     })();
@@ -75,6 +89,12 @@ export function App() {
       return (
         <Home
           story={story}
+          stories={stories}
+          onSelectStory={(id) => {
+            selectStory(id);
+            updatePrefs({ storyId: id });
+          }}
+          onStoriesChanged={refreshStories}
           progress={progress}
           prefs={prefs}
           onPrefs={updatePrefs}

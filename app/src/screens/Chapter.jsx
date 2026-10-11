@@ -49,7 +49,7 @@ export default function Chapter({ story, chapter, prefs, progress, resume, onExi
   };
 
   const title = `Chapter ${chapter.number}: ${chapter.title}`;
-  const narrate = (part, text) => prefs.narration && playClip(clipId(chapter.id, part), text, title);
+  const narrate = (part, text) => prefs.narration && playClip(clipId(chapter.id, part), text, title, story.audio);
   const { step, discovery, continuation, walk } = state;
 
   useEffect(() => {

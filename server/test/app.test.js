@@ -107,3 +107,39 @@ describe('model sync', () => {
     await expect(syncModels(dir, { log: {}, fetchImpl })).rejects.toThrow('size mismatch');
   });
 });
+
+describe('story packs', () => {
+  const packsDir = path.join(root, 'packs');
+  const mk = (id, status, extra = {}) => {
+    mkdirSync(path.join(packsDir, id, 'audio'), { recursive: true });
+    const pack = { id, version: 1, status, title: `T ${id}`, tagline: 't', requires: 'quiet-atlas', chapters: [{ id: 'c1' }],
+      audio: { base: `/packs/${id}/audio/`, clips: { 'c1-intro': { file: 'c1-intro-abc.mp3', bytes: 10 } } }, ...extra };
+    writeFileSync(path.join(packsDir, id, 'pack.json'), JSON.stringify(pack));
+    writeFileSync(path.join(packsDir, id, 'audio', 'c1-intro-abc.mp3'), Buffer.alloc(10));
+  };
+  let srv;
+  beforeAll(async () => {
+    mk('second-atlas', 'approved');
+    mk('draft-pack', 'draft');
+    srv = buildServer({ appDist, modelsDir: path.join(root, 'models3'), packsDir, logger: false });
+    await srv.ready();
+  });
+  afterAll(() => srv.close());
+
+  it('lists only approved packs', async () => {
+    const res = await srv.inject('/api/packs');
+    expect(res.json().map((p) => p.id)).toEqual(['second-atlas']);
+    expect(res.json()[0]).toMatchObject({ chapters: 1, requires: 'quiet-atlas' });
+  });
+  it('serves an approved pack and 404s drafts', async () => {
+    expect((await srv.inject('/api/packs/second-atlas')).json().title).toBe('T second-atlas');
+    expect((await srv.inject('/api/packs/draft-pack')).statusCode).toBe(404);
+  });
+  it('serves approved pack audio only', async () => {
+    const ok = await srv.inject('/packs/second-atlas/audio/c1-intro-abc.mp3');
+    expect(ok.statusCode).toBe(200);
+    expect(ok.headers['cache-control']).toContain('immutable');
+    expect((await srv.inject('/packs/draft-pack/audio/c1-intro-abc.mp3')).statusCode).toBe(404);
+    expect((await srv.inject('/packs/second-atlas/pack.json')).statusCode).toBe(404);
+  });
+});

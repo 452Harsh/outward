@@ -4,7 +4,7 @@ import { newProgress } from '../engine/story.js';
 let dbPromise;
 
 function db() {
-  dbPromise ??= openDB('outward', 2, {
+  dbPromise ??= openDB('outward', 3, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore('meta');
@@ -15,6 +15,10 @@ function db() {
       if (oldVersion < 2) {
         // Field-test event log (screen-off experiments). Cleared per run.
         d.createObjectStore('fieldlog', { keyPath: 'id', autoIncrement: true });
+      }
+      if (oldVersion < 3) {
+        // Story packs downloaded from the story factory (text; audio lives in Cache Storage).
+        d.createObjectStore('packs', { keyPath: 'id' });
       }
     },
   });
@@ -49,6 +53,14 @@ export async function addSession(session) {
 export const getActiveChapter = () => getMeta('activeChapter', null);
 export const saveActiveChapter = (state) => setMeta('activeChapter', state);
 export const clearActiveChapter = () => setMeta('activeChapter', null);
+
+export async function getPacks() {
+  return (await db()).getAll('packs');
+}
+
+export async function savePack(pack) {
+  await (await db()).put('packs', pack);
+}
 
 export async function getSessions() {
   return (await db()).getAll('sessions');

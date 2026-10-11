@@ -17,6 +17,11 @@ export function buildClips(story, note) {
   return clips;
 }
 
+/** Clips for a factory story pack (no safety-note clip; the app already has one). */
+export function buildPackClips(pack) {
+  return buildClips({ chapters: pack.chapters }, { title: '', points: [] }).filter((c) => c.id !== 'safety-note');
+}
+
 /** Credits per character by ElevenLabs model (multilingual v2 = 1, flash/turbo = 0.5). */
 export function creditsPerChar(modelId) {
   return /flash|turbo/.test(modelId ?? '') ? 0.5 : 1;

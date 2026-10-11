@@ -1,0 +1,42 @@
+{
+  "_comment": "Human-written pack plan. Missions, examples and safety notes are written by people; the factory model only writes the prose around them.",
+  "id": "second-atlas",
+  "title": "The Second Atlas",
+  "tagline": "A new atlas, drawn in light, shadow and the marks people leave.",
+  "requires": "quiet-atlas",
+  "narrator": "The Archivist",
+  "premise": "Season one ended with the last Wayfinder's note: they erased the old map so you could draw your own, and a second atlas appeared on the back cover. Its pages are not made of ink but of light, shadow and the marks people leave for each other. The Archivist keeps it. The Wayfinder (the listener, 'you') fills it by noticing real things outside. A gentle mystery: someone has started leaving tiny drawings in its margins, as if answering you.",
+  "style": "Calm, warm, second person ('you'). The Archivist has no gender (use their name or 'they'). No danger, no villains, no gore. Short sentences, vivid but simple.",
+  "chapters": [
+    {
+      "id": "s2ch1",
+      "theme": "light",
+      "mission": {
+        "id": "shines",
+        "prompt": "The second atlas needs light. Find something that catches the light: a puddle reflecting the sky, a shop window, a polished railing, a bicycle bell.",
+        "examples": ["a puddle full of sky", "a shop window glowing", "a shiny bicycle bell", "sunlight on a brass door handle"],
+        "safetyNote": "Look, don't touch. Puddles are for looking into, not stepping in."
+      }
+    },
+    {
+      "id": "s2ch2",
+      "theme": "shadow",
+      "mission": {
+        "id": "shadow",
+        "prompt": "Light makes shadows, and the atlas wants one. Find an interesting shadow: a tree's shadow on a wall, a lamp post stretched long, the lace of leaves on the ground.",
+        "examples": ["a tree shadow on a wall", "my own long shadow", "the shadow of a fence", "leaf shadows on the path"],
+        "safetyNote": "Stay on the path and keep away from roads while you look."
+      }
+    },
+    {
+      "id": "s2ch3",
+      "theme": "marks",
+      "mission": {
+        "id": "message",
+        "prompt": "The last page is for messages. Find a sign, word or symbol that someone made by hand: street art, a hand-painted sign, a chalk drawing, a name on a bench.",
+        "examples": ["a hand-painted shop sign", "a chalk heart on the pavement", "a mural of a bird", "initials on a bench"],
+        "safetyNote": "Read it from where you are. No need to go through gates or into private places."
+      }
+    }
+  ]
+}

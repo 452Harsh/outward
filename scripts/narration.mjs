@@ -2,6 +2,7 @@
 //
 //   node scripts/narration.mjs            dry run: characters, credits, what would be generated
 //   node scripts/narration.mjs --yes      generate missing/changed clips (spends ElevenLabs credits)
+//   node scripts/narration.mjs --pack second-atlas [--yes]   narrate a factory story pack
 //
 // Needs ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID in .env (never committed).
 // File names include a hash of voice + model + settings + text, so only clips
@@ -9,11 +10,14 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { buildClips, creditsPerChar } from '../content/audio/clips.js';
+import { buildClips, buildPackClips, creditsPerChar } from '../content/audio/clips.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const read = (p) => JSON.parse(readFileSync(path.join(root, p), 'utf8'));
-const OUT_DIR = path.join(root, 'app/public/audio');
+const packArg = process.argv.indexOf('--pack');
+const packId = packArg > -1 ? process.argv[packArg + 1] : null;
+const PACK_FILE = packId && path.join(root, 'content/packs', packId, 'pack.json');
+const OUT_DIR = packId ? path.join(root, 'content/packs', packId, 'audio') : path.join(root, 'app/public/audio');
 const MANIFEST = path.join(root, 'content/audio/manifest.json');
 const FORMAT = 'mp3_44100_64';
 const SETTINGS = { stability: 0.55, similarity_boost: 0.75, style: 0.15, use_speaker_boost: true };
@@ -29,7 +33,8 @@ const voiceId = process.env.ELEVENLABS_VOICE_ID ?? 'unset';
 const modelId = process.env.ELEVENLABS_MODEL ?? 'eleven_multilingual_v2';
 const generate = process.argv.includes('--yes');
 
-const clips = buildClips(read('content/stories/quiet-atlas/story.json'), read('content/safety/note.json'));
+const pack = packId ? JSON.parse(readFileSync(PACK_FILE, 'utf8')) : null;
+const clips = pack ? buildPackClips(pack) : buildClips(read('content/stories/quiet-atlas/story.json'), read('content/safety/note.json'));
 const fileFor = (c) => {
   const h = createHash('sha256').update(JSON.stringify([voiceId, modelId, FORMAT, SETTINGS, c.text])).digest('hex');
   return `${c.id}-${h.slice(0, 10)}.mp3`;
@@ -39,7 +44,7 @@ const todo = clips.filter((c) => !existsSync(path.join(OUT_DIR, fileFor(c))));
 const chars = (list) => list.reduce((n, c) => n + c.text.length, 0);
 const rate = creditsPerChar(modelId);
 
-console.log(`Voice ${voiceId}, model ${modelId}, ${FORMAT}`);
+console.log(`${packId ? `Pack ${packId}: ` : ''}Voice ${voiceId}, model ${modelId}, ${FORMAT}`);
 console.log(`${clips.length} clips, ${chars(clips)} characters in total`);
 console.log(`To generate: ${todo.length} clips, ${chars(todo)} characters ≈ ${Math.ceil(chars(todo) * rate)} credits`);
 
@@ -77,6 +82,11 @@ for (const c of clips) {
 }
 const keep = new Set(Object.values(manifest.clips).map((c) => c.file));
 for (const f of readdirSync(OUT_DIR)) if (f.endsWith('.mp3') && !keep.has(f)) rmSync(path.join(OUT_DIR, f));
-writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+if (pack) {
+  pack.audio = { base: `/packs/${packId}/audio/`, clips: manifest.clips, voiceId, modelId, format: FORMAT };
+  writeFileSync(PACK_FILE, `${JSON.stringify(pack, null, 2)}\n`);
+} else {
+  writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+}
 const total = Object.values(manifest.clips).reduce((n, c) => n + c.bytes, 0);
-console.log(`Done. ${Object.keys(manifest.clips).length} clips, ${(total / 1e6).toFixed(1)} MB → app/public/audio`);
+console.log(`Done. ${Object.keys(manifest.clips).length} clips, ${(total / 1e6).toFixed(1)} MB → ${path.relative(root, OUT_DIR)}`);

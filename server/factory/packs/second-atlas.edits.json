@@ -1,0 +1,25 @@
+{
+  "_comment": "Human review edits applied at approval. Reason for each is recorded in the pack.",
+  "s2ch1": {
+    "continuationTemplate": {
+      "text": "You point it out without touching it: \"{discovery}.\" The atlas does not use ink this time. A small square of light opens on the first page, bright as a window, and holds still. The Archivist shades their eyes and smiles. \"Light that someone else will see tomorrow, and you saw it first.\" In the margin, a tiny drawing appears beside the light, as if someone is answering you.",
+      "reason": "generated version had the listener touching the find (contradicts 'look, don't touch'); quote the user's words like season one"
+    }
+  },
+  "s2ch2": {
+    "continuationTemplate": {
+      "text": "\"{discovery},\" you say, and the atlas darkens gently where you are looking. A shadow spreads across the second page, soft-edged and exact, as if the paper were standing in the sun. The Archivist traces its outline in the air, careful not to touch the page. \"Shadows only exist because light found something to hold.\" Beside the shadow, the little drawing in the margin has grown, and it is pointing somewhere new.",
+      "reason": "generated version assumed the shadow belonged to a tree"
+    }
+  },
+  "s2ch3": {
+    "continuationTemplate": {
+      "text": "You read it from where you stand: \"{discovery}.\" Someone made that with their own hands, for people they would never meet. The last page fills with colour, light and shadow joining around your words. The Archivist reads it twice, quietly. \"This is how the world talks to itself.\" In the margin, the small drawings gather into a single line of handwriting, and it is waiting for your reply.",
+      "reason": "generated version had the listener pressing a thumb on the sign (contradicts 'read it from where you are')"
+    },
+    "cliffhanger": {
+      "text": "As you turn back toward the path, the sign seems to shimmer, its colours deepening with your attention. In the corner of the last page, a new mark appears where none was before, written in your own hand. It reads: 'Thank you.' The walk is over, but the atlas is not. It stays open, waiting for the next pair of eyes to find a mark and begin a new sentence.",
+      "reason": "removed 'The season is over' (breaks the story voice)"
+    }
+  }
+}

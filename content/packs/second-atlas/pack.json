@@ -1,0 +1,173 @@
+{
+  "id": "second-atlas",
+  "version": 1,
+  "status": "approved",
+  "title": "The Second Atlas",
+  "tagline": "A new atlas, drawn in light, shadow and the marks people leave.",
+  "narrator": "The Archivist",
+  "premise": "Season one ended with the last Wayfinder's note: they erased the old map so you could draw your own, and a second atlas appeared on the back cover. Its pages are not made of ink but of light, shadow and the marks people leave for each other. The Archivist keeps it. The Wayfinder (the listener, 'you') fills it by noticing real things outside. A gentle mystery: someone has started leaving tiny drawings in its margins, as if answering you.",
+  "requires": "quiet-atlas",
+  "generatedBy": {
+    "model": "Qwen/Qwen3.5-4B",
+    "via": "Tinker",
+    "usd": 0.007
+  },
+  "chapters": [
+    {
+      "id": "s2ch1",
+      "number": 1,
+      "title": "The Light That Stays",
+      "intro": "Welcome back, traveler. The first atlas is closed now. A new one waits for you on the cover. It is not made of paper, but of captured moments. You carry it within your attention. The Archivist waits by the path to guide your eyes. Do not look for hidden dangers. Look only for brightness. The pages hunger for a single spark of something real to begin their story.",
+      "mission": {
+        "id": "shines",
+        "prompt": "The second atlas needs light. Find something that catches the light: a puddle reflecting the sky, a shop window, a polished railing, a bicycle bell.",
+        "examples": [
+          "a puddle full of sky",
+          "a shop window glowing",
+          "a shiny bicycle bell",
+          "sunlight on a brass door handle"
+        ],
+        "safetyNote": "Look, don't touch. Puddles are for looking into, not stepping in."
+      },
+      "storyContext": "The Wayfinder erased the old map to make room for a second atlas made of light. You are the first to fill its blank pages, but tiny drawings already appear in the margins as if someone has answered your presence.",
+      "continuationTemplate": "You point it out without touching it: \"{discovery}.\" The atlas does not use ink this time. A small square of light opens on the first page, bright as a window, and holds still. The Archivist shades their eyes and smiles. \"Light that someone else will see tomorrow, and you saw it first.\" In the margin, a tiny drawing appears beside the light, as if someone is answering you.",
+      "cliffhanger": "As you turn away, a small line of silver ink appears on the margin. It mirrors the curve of the light you just saw. Someone has already begun to draw in your shadow, waiting for you to finish the sentence they started.",
+      "unlock": {
+        "minMeters": {
+          "10": 250,
+          "30": 700,
+          "60": 1400
+        }
+      }
+    },
+    {
+      "id": "s2ch2",
+      "number": 2,
+      "title": "The Shadow That Waits",
+      "intro": "Gentle afternoon sun warms your face, but look down. See how the light bends around things? The atlas knows that without light, there is no shadow. It wants you to find one. Not a fear, but a shape made by what is seen. Walk slowly and notice the dark that belongs to the light. You are about to leave your mark on this new world.",
+      "mission": {
+        "id": "shadow",
+        "prompt": "Light makes shadows, and the atlas wants one. Find an interesting shadow: a tree's shadow on a wall, a lamp post stretched long, the lace of leaves on the ground.",
+        "examples": [
+          "a tree shadow on a wall",
+          "my own long shadow",
+          "the shadow of a fence",
+          "leaf shadows on the path"
+        ],
+        "safetyNote": "Stay on the path and keep away from roads while you look."
+      },
+      "storyContext": "Season one ended with the first atlas of light appearing on the back cover, filled with tiny drawings from unseen hands. This chapter asks you to find a specific shadow and leave a mark that matches it.",
+      "continuationTemplate": "\"{discovery},\" you say, and the atlas darkens gently where you are looking. A shadow spreads across the second page, soft-edged and exact, as if the paper were standing in the sun. The Archivist traces its outline in the air, careful not to touch the page. \"Shadows only exist because light found something to hold.\" Beside the shadow, the little drawing in the margin has grown, and it is pointing somewhere new.",
+      "cliffhanger": "As you finish your mark, the shadow on the wall shifts, not with the wind, but with intent. A new drawing appears in the dark space you just filled, a small seed growing where your line ended. It does not match the light you see; it matches the quiet between heartbeats. Someone is drawing in the space you did not find, waiting for you to come back and finish their thought.",
+      "unlock": {
+        "minMeters": {
+          "10": 250,
+          "30": 700,
+          "60": 1400
+        }
+      }
+    },
+    {
+      "id": "s2ch3",
+      "number": 3,
+      "title": "The Mark You Find",
+      "intro": "Listen closely. The light and shadow have spoken, but words are the truest bridge between hearts. This final page of the second atlas is for messages, not just marks. I see you looking for a sign, a word, or a symbol made by hand. It might be street art, a painted sign, a chalk drawing, or a name carved into wood. Do not rush. Let your eyes rest gently on the world until something catches your attention. When you find it, remember that you are the next keeper of this story.",
+      "mission": {
+        "id": "message",
+        "prompt": "The last page is for messages. Find a sign, word or symbol that someone made by hand: street art, a hand-painted sign, a chalk drawing, a name on a bench.",
+        "examples": [
+          "a hand-painted shop sign",
+          "a chalk heart on the pavement",
+          "a mural of a bird",
+          "initials on a bench"
+        ],
+        "safetyNote": "Read it from where you are. No need to go through gates or into private places."
+      },
+      "storyContext": "Season one ended with the erasure of the old map, revealing a second atlas of light and shadow where listeners leave marks for future travelers. Chapter three concludes the season by having you find a human-made sign to complete the cycle of communication.",
+      "continuationTemplate": "You read it from where you stand: \"{discovery}.\" Someone made that with their own hands, for people they would never meet. The last page fills with colour, light and shadow joining around your words. The Archivist reads it twice, quietly. \"This is how the world talks to itself.\" In the margin, the small drawings gather into a single line of handwriting, and it is waiting for your reply.",
+      "cliffhanger": "As you turn back toward the path, the sign seems to shimmer, its colours deepening with your attention. In the corner of the last page, a new mark appears where none was before, written in your own hand. It reads: 'Thank you.' The walk is over, but the atlas is not. It stays open, waiting for the next pair of eyes to find a mark and begin a new sentence.",
+      "unlock": {
+        "minMeters": {
+          "10": 250,
+          "30": 700,
+          "60": 1400
+        }
+      }
+    }
+  ],
+  "audio": {
+    "base": "/packs/second-atlas/audio/",
+    "clips": {
+      "s2ch1-intro": {
+        "file": "s2ch1-intro-6c2f2326d4.mp3",
+        "chars": 364,
+        "bytes": 184155
+      },
+      "s2ch1-mission": {
+        "file": "s2ch1-mission-43860ac329.mp3",
+        "chars": 214,
+        "bytes": 109758
+      },
+      "s2ch1-cliffhanger": {
+        "file": "s2ch1-cliffhanger-b36fc46ee4.mp3",
+        "chars": 218,
+        "bytes": 99309
+      },
+      "s2ch2-intro": {
+        "file": "s2ch2-intro-742a3f88e5.mp3",
+        "chars": 330,
+        "bytes": 169944
+      },
+      "s2ch2-mission": {
+        "file": "s2ch2-mission-ea60a62c35.mp3",
+        "chars": 220,
+        "bytes": 114146
+      },
+      "s2ch2-cliffhanger": {
+        "file": "s2ch2-cliffhanger-dd3dd775ad.mp3",
+        "chars": 375,
+        "bytes": 180811
+      },
+      "s2ch3-intro": {
+        "file": "s2ch3-intro-efa789dc4f.mp3",
+        "chars": 478,
+        "bytes": 251237
+      },
+      "s2ch3-mission": {
+        "file": "s2ch3-mission-192c6b0ee0.mp3",
+        "chars": 234,
+        "bytes": 128357
+      },
+      "s2ch3-cliffhanger": {
+        "file": "s2ch3-cliffhanger-9f2d7d97c4.mp3",
+        "chars": 356,
+        "bytes": 181856
+      }
+    },
+    "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+    "modelId": "eleven_multilingual_v2",
+    "format": "mp3_44100_64"
+  },
+  "reviewEdits": [
+    {
+      "chapter": "s2ch1",
+      "field": "continuationTemplate",
+      "reason": "generated version had the listener touching the find (contradicts 'look, don't touch'); quote the user's words like season one"
+    },
+    {
+      "chapter": "s2ch2",
+      "field": "continuationTemplate",
+      "reason": "generated version assumed the shadow belonged to a tree"
+    },
+    {
+      "chapter": "s2ch3",
+      "field": "continuationTemplate",
+      "reason": "generated version had the listener pressing a thumb on the sign (contradicts 'read it from where you are')"
+    },
+    {
+      "chapter": "s2ch3",
+      "field": "cliffhanger",
+      "reason": "removed 'The season is over' (breaks the story voice)"
+    }
+  ]
+}

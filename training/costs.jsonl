@@ -20,3 +20,4 @@
 {"step": "eval:final-teacher-v3", "started": "2026-10-10T19:10:04+00:00", "finished": "2026-10-10T19:10:12+00:00", "prompt_tokens": 10615, "sampled_tokens": 15409, "estimated_usd": 0.019, "billed_usd_same_hours": 0, "note": "150 prompts"}
 {"step": "distill:prompts", "started": "2026-10-10T19:18:37+00:00", "finished": "2026-10-10T19:18:53+00:00", "prompt_tokens": 6253, "sampled_tokens": 32249, "estimated_usd": 0.0345, "billed_usd_same_hours": 0, "note": "2500 prompts"}
 {"step": "distill:teacher-samples", "started": "2026-10-10T19:19:07+00:00", "finished": "2026-10-10T19:19:24+00:00", "prompt_tokens": 548569, "sampled_tokens": 797912, "estimated_usd": 0.9829, "billed_usd_same_hours": 0, "note": "2500 prompts x 3, teacher v3"}
+{"step": "factory:second-atlas", "started": "2026-10-11T03:36:57+00:00", "finished": "2026-10-11T03:37:11+00:00", "prompt_tokens": 1828, "sampled_tokens": 6301, "estimated_usd": 0.007, "billed_usd_same_hours": 0, "note": "3 chapters"}

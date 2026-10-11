@@ -6,7 +6,7 @@ Outward is an installable web app (PWA) that turns a walk into an adventure. You
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
 
-> **Status:** Phase 6 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode, along with walking-gated missions, a drawn walk path and screen-time stats. The phone now runs a Gemma 3 270M that was distilled from a Tinker fine-tuned Qwen3.5-4B (rubric 2.55 → 4.75; see [training/RESULTS.md](training/RESULTS.md)). Story factory and write-up come next (see [Roadmap](#roadmap)).
+> **Status:** Phase 7 of 8. The offline PWA, the 5-chapter story, an on-device Gemma 3 270M storyteller and on-device voice input (Whisper) work in airplane mode, along with walking-gated missions, a drawn walk path and screen-time stats. The phone now runs a Gemma 3 270M that was distilled from a Tinker fine-tuned Qwen3.5-4B (rubric 2.55 → 4.75; see [training/RESULTS.md](training/RESULTS.md)). A story factory ships new reviewed, narrated story packs ("The Second Atlas"). The write-up comes next (see [Roadmap](#roadmap)).
 
 ## On-device AI
 
@@ -34,6 +34,20 @@ Run `npm run size` after a build for the install size by part.
 | Screen time | Page Visibility API: time Outward is visible vs total chapter time, shown as "% phone-free" |
 | Walk path | Canvas drawing from GPS points; no map tiles, nothing leaves the phone |
 | Streak | Consecutive days with a finished (non-practice) chapter |
+
+## Story factory
+
+New stories are made on a Mac and served by Render. **No API keys live on the server.**
+
+1. **A person writes the plan:** `server/factory/packs/<id>.config.json` holds the premise, each chapter's mission, examples and safety note.
+2. **`make_pack.py generate <id>`:** base Qwen3.5-4B on Tinker writes only the prose (title, intro, story context, fallback continuation, cliffhanger). Every field must pass the shared safety filter and format checks; up to 6 samples are tried per chapter. About $0.007 for 3 chapters.
+3. **Review:** read `content/packs/<id>/REVIEW.md`. Edits go in `<id>.edits.json`, each with a reason, and are recorded in the pack as `reviewEdits`. Apply them with `make_pack.py edit <id>`.
+4. **`node scripts/narration.mjs --pack <id> [--yes]`:** ElevenLabs narration. It's a dry run (credits only) without `--yes`.
+5. **`make_pack.py approve <id>`:** runs the final safety check and sets `status: approved`. Commit and push; Render redeploys.
+
+The server serves `GET /api/packs` (approved only), `GET /api/packs/:id` and `/packs/<id>/audio/*.mp3`. The app offers new packs on Home when online, downloads the text to IndexedDB and the narration to Cache Storage (so it plays offline), keeps progress per story, and locks a pack until the story it `requires` is finished.
+
+**First pack:** *The Second Atlas*, 3 chapters about light, shadow and hand-made marks. Generation cost $0.007 on Tinker, narration 2,789 ElevenLabs credits, and there were 4 review edits (two fallback lines had the listener touching the find, which contradicted the safety note).
 
 ## Repo layout
 
@@ -134,7 +148,7 @@ See [training/README.md](training/README.md): seed dataset → eval set and rubr
 4. ✅ GPS walk path, walking-gated missions, screen-time tracking, streaks
 5. ✅ Tinker teacher fine-tune + eval
 6. ✅ Distillation → Gemma student → swapped into the app
-7. Story factory on Render + Sentry Agent Tracing
+7. ✅ Story factory: Mac-side generation (Tinker + ElevenLabs), human review, served by Render (Sentry dropped)
 8. Write-up and demo
 
 ## License
