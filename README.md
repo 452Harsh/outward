@@ -2,6 +2,8 @@
 
 **Your story happens outside.**
 
+🔗 **Live:** https://outward-6fhh.onrender.com · 🎬 **Demo video:** https://youtu.be/ah1n-Uxp8ik
+
 Outward is an installable web app (PWA) that turns a walk into an adventure. You are the main character. The story moves forward only when you go outside and complete real-world missions, like *"find something that flows."* You describe what you found, and a small open-weight model running **on your phone** weaves it into the story.
 
 After one install, it works fully offline: no signal needed, and nothing about your location, voice or walks leaves the phone.
